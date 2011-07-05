@@ -21,6 +21,12 @@
   (:documentation "A basic element which has no sub-boxess. For
   example, a single glyph."))
 
+(defun simple-box (w h b)
+  (make-instance 'simple-box
+                 :width w
+                 :height h
+                 :baseline b))
+
 (defmethod width ((box simple-box))
   (simple.width box))
 
@@ -40,17 +46,13 @@
   (:documentation "Base class for boxes which are composed of
   sub-boxes."))
 
-(defgeneric compound-box-p (box))
-
-(defmethod compound-box-p ((box compound-box))
-  t)
-
-(defmethod compound-box-p (box)
-  nil)
-
 (defclass row-box (compound-box)
-  ((children :accessor children))
+  ((children :accessor children :initarg :children))
   (:documentation "A series of boxes aligned in a row."))
+
+(defun row-box (&rest boxes)
+  (make-instance 'row-box
+                 :children boxes))
 
 (defmethod width ((box row-box))
   "width(rowbox) = SUM_i width(child_i)"
