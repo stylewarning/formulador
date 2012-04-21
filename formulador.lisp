@@ -28,7 +28,8 @@
 (defun simple-box (w h b)
   (make-instance 'simple-box :width w :height h :baseline b))
 
-(defparameter empty-box (simple-box 0 0 0))
+(with-compilation-unit ()
+  (defconstant empty-box (simple-box 0 0 0)))
 
 ;;; Compound boxes.
 

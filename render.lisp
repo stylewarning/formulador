@@ -43,6 +43,13 @@
                                                  :y y-offset)
                :do (incf y-offset (height child))))))
 
+#+#:ignore
+(defparameter *test* (row-box (simple-box 100 100 10)
+                              (column-box
+                               (simple-box 50 75 25)
+                               (simple-box 25 15 5))
+                              (simple-box 50 90 30)))
+
 (defun render-rectangles (rectangles &key
                           (output "out.png")
                           (width 1000)
