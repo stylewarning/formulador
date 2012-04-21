@@ -1,9 +1,9 @@
 ;;;; render.lisp
-;;;; Copyright (c) 2011 Robert Smith
+;;;; Copyright (c) 2011-2012 Robert Smith
 
 ;;; Facility to render boxes.
 
-(in-package :formulador)
+(in-package #:formulador)
 
 (defun bounding-rectangle (box &optional (x-offset 0) (y-offset 0))
   (list x-offset
