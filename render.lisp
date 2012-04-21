@@ -14,16 +14,10 @@
 
 (defgeneric make-rectangles (box &key x y))
 
-(defmethod make-rectangles ((box simple-box)
-                            &key
-                            (x 0)
-                            (y 0))
+(defmethod make-rectangles ((box simple-box) &key (x 0) (y 0))
   (list (bounding-rectangle box x y)))
 
-(defmethod make-rectangles ((box row-box)
-                            &key
-                            (x 0)
-                            (y 0))
+(defmethod make-rectangles ((box row-box) &key (x 0) (y 0))
   (append nil ;(list (bounding-rectangle box x y))
           (let ((x-offset x))
             (loop
@@ -33,6 +27,15 @@
                                            :x x-offset
                                            :y y-offset)
                :do (incf x-offset (width child))))))
+
+(defmethod make-rectangles ((box column-box) &key (x 0) (y 0))
+  (append nil ;(list (bounding-rectangle box x y))
+          (let ((y-offset y))
+            (loop
+               :for child :in (children box)
+               :appending (make-rectangles child :x x
+                                                 :y y-offset)
+               :do (incf y-offset (height child))))))
 
 (defun render-rectangles (rectangles &key
                           (output "out.png")
