@@ -7,9 +7,14 @@
   ()
   (:documentation "Base class for boxes."))
 
-(defgeneric width (box))
-(defgeneric height (box))
-(defgeneric baseline (box))
+(defgeneric width (box)
+  (:documentation "Compute the width of a box BOX."))
+
+(defgeneric height (box)
+  (:documentation "Compute the height of a box BOX."))
+
+(defgeneric baseline (box)
+  (:documentation "Compute the baseline of a box BOX."))
 
 ;;; Simple boxes.
 
@@ -21,13 +26,9 @@
   example, a single glyph."))
 
 (defun simple-box (w h b)
-  (make-instance 'simple-box
-                 :width w
-                 :height h
-                 :baseline b))
+  (make-instance 'simple-box :width w :height h :baseline b))
 
-(defparameter empty-box
-  (make-instance 'simple-box :width 0 :height 0 :baseline 0))
+(defconstant empty-box (simple-box 0 0 0))
 
 ;;; Compound boxes.
 
