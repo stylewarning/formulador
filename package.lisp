@@ -4,9 +4,7 @@
 ;;;; Declare the formulador package.
 
 (defpackage #:formulador
-  (:use :cl)
-  (:nicknames :formula)
-  (:export
-   )
-  (:documentation "Le formula renderering packabge.")
-  )
+  (:use #:cl)
+  (:nicknames #:formula)
+  (:export)
+  (:documentation "Le formula renderering package."))

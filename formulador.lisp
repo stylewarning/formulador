@@ -1,7 +1,7 @@
 ;;;; formulador.lisp
-;;;; Copyright (c) 2011 Robert Smith
+;;;; Copyright (c) 2011-2012 Robert Smith
 
-(in-package :formulador)
+(in-package #:formulador)
 
 (defclass box ()
   ()
