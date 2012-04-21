@@ -28,13 +28,13 @@
 (defun simple-box (w h b)
   (make-instance 'simple-box :width w :height h :baseline b))
 
-(defconstant empty-box (simple-box 0 0 0))
+(defparameter empty-box (simple-box 0 0 0))
 
 ;;; Compound boxes.
 
 (defclass compound-box (box)
   ((children :accessor children :initarg :children))
-  (documentation "Base class for boxes which are composed of
+  (:documentation "Base class for boxes which are composed of
   sub-boxes."))
 
 ;;; Row boxes.
@@ -78,9 +78,8 @@
 
 ;;; XXX complete
 (defmethod height ((box column-box))
-  (+ (baseline box)
-     (loop :for child :in (children box)
-           :maximize (- (height child) (baseline child)))))
+  (loop :for child :in (children box)
+        :summing (height child)))
 
 ;;; Fraction boxes.
 
