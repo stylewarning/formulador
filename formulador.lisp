@@ -46,7 +46,7 @@
   (make-instance 'row-box :children boxes))
 
 (defmethod width ((box row-box))
-  "width(rowbox) = SUM_i width(child_i)"
+  ;; width(rowbox) = SUM_i width(child_i)
   (reduce #'+ (children box) :key #'width))
 
 (defmethod baseline ((box row-box))
@@ -68,9 +68,9 @@
   (make-instance 'column-box :children boxes))
 
 (defmethod width ((box column-box))
-  "width(columnbox) = max_i width(child_i)"
-    (loop :for child :in (children box)
-          :maximize (width child)))
+  ;; width(columnbox) = max_i width(child_i)
+  (loop :for child :in (children box)
+        :maximize (width child)))
 
 (defmethod baseline ((box column-box))
   (/ (height box) 2))
