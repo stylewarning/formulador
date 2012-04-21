@@ -5,12 +5,19 @@
 
 (in-package #:formulador)
 
+(defstruct rectangle
+  x-offset
+  y-offset
+  width
+  height
+  baseline)
+
 (defun bounding-rectangle (box &optional (x-offset 0) (y-offset 0))
-  (list x-offset
-        y-offset
-        (width box)
-        (height box)
-        (baseline box)))
+  (make-rectangle :x-offset x-offset
+                  :y-offset y-offset
+                  :width (width box)
+                  :height (height box)
+                  :baseline (baseline box)))
 
 (defgeneric make-rectangles (box &key x y))
 
@@ -23,9 +30,8 @@
             (loop
                :for child :in (children box)
                :for y-offset := (- (baseline box) (baseline child))
-               :appending (make-rectangles child
-                                           :x x-offset
-                                           :y y-offset)
+               :appending (make-rectangles child :x x-offset
+                                                 :y y-offset)
                :do (incf x-offset (width child))))))
 
 (defmethod make-rectangles ((box column-box) &key (x 0) (y 0))
@@ -49,19 +55,18 @@
     (loop
        :for r :in rectangles
        :do (progn
-             (vecto:rectangle (first r)
-                              (second r)
-                              (third r)
-                              (fourth r))
+             (vecto:rectangle (rectangle-x-offset r)
+                              (rectangle-y-offset r)
+                              (rectangle-width r)
+                              (rectangle-height r))
              (vecto:stroke)
              (vecto:with-graphics-state
                (vecto:set-dash-pattern #(10 10 10) 0)
-               (vecto:move-to (first r)
-                              (+ (second r)
-                                 (fifth r)))
-               (vecto:line-to (+ (first r) (third r))
-                              (+ (second r)
-                                 
-                                 (fifth r)))
+               (vecto:move-to (rectangle-x-offset r)
+                              (+ (rectangle-y-offset r)
+                                 (rectangle-baseline r)))
+               (vecto:line-to (+ (rectangle-x-offset r) (rectangle-width r))
+                              (+ (rectangle-y-offset r)
+                                 (rectangle-baseline r)))
                (vecto:stroke))))
     (vecto:save-png output)))
