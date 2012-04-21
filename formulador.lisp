@@ -14,11 +14,10 @@
 ;;; Simple boxes.
 
 (defclass simple-box (box)
-  ((width :accessor simple.width :initarg :width)
-   (height :accessor simple.height :initarg :height)
-   (baseline :accessor simple.baseline :initarg :baseline)
-   )
-  (:documentation "A basic element which has no sub-boxess. For
+  ((width :accessor width :initarg :width)
+   (height :accessor height :initarg :height)
+   (baseline :accessor baseline :initarg :baseline))
+  (:documentation "A basic element which has no sub-boxes. For
   example, a single glyph."))
 
 (defun simple-box (w h b)
@@ -26,15 +25,6 @@
                  :width w
                  :height h
                  :baseline b))
-
-(defmethod width ((box simple-box))
-  (simple.width box))
-
-(defmethod height ((box simple-box))
-  (simple.height box))
-
-(defmethod baseline ((box simple-box))
-  (simple.baseline box))
 
 (defparameter empty-box
   (make-instance 'simple-box :width 0 :height 0 :baseline 0))
