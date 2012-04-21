@@ -32,50 +32,45 @@
 ;;; Compound boxes.
 
 (defclass compound-box (box)
-  (children)
-  (:documentation "Base class for boxes which are composed of
+  ((children :accessor children :initarg :children))
+  (documentation "Base class for boxes which are composed of
   sub-boxes."))
 
 ;;; Row boxes.
 
 (defclass row-box (compound-box)
-  ((children :accessor children :initarg :children))
+  ()
   (:documentation "A series of boxes aligned in a row."))
 
 (defun row-box (&rest boxes)
-  (make-instance 'row-box
-                 :children boxes))
+  (make-instance 'row-box :children boxes))
 
 (defmethod width ((box row-box))
   "width(rowbox) = SUM_i width(child_i)"
   (reduce #'+ (children box) :key #'width))
 
 (defmethod baseline ((box row-box))
-  (loop
-     :for child :in (children box)
-     :maximize (baseline child)))
+  (loop :for child :in (children box)
+        :maximize (baseline child)))
 
 (defmethod height ((box row-box))
   (+ (baseline box)
-     (loop
-        :for child :in (children box)
-        :maximize (- (height child) (baseline child)))))
+     (loop :for child :in (children box)
+           :maximize (- (height child) (baseline child)))))
 
 ;;; Column boxes.
 
 (defclass column-box (compound-box)
-  ((children :accessor children :initarg :children))
+  ()
   (:documentation "A series of boxes aligned in a column."))
 
 (defun column-box (&rest boxes)
-  (make-instance 'column-box
-                 :children boxes))
+  (make-instance 'column-box :children boxes))
 
 (defmethod width ((box column-box))
   "width(columnbox) = max_i width(child_i)"
-    (loop
-     :for child :in (children box)
-     :maximize (width child)))
+    (loop :for child :in (children box)
+          :maximize (width child)))
 
 (defmethod baseline ((box column-box))
   (/ (height box) 2))
@@ -83,9 +78,8 @@
 ;;; XXX complete
 (defmethod height ((box column-box))
   (+ (baseline box)
-     (loop
-        :for child :in (children box)
-        :maximize (- (height child) (baseline child)))))
+     (loop :for child :in (children box)
+           :maximize (- (height child) (baseline child)))))
 
 ;;; Fraction boxes.
 
