@@ -1,3 +1,6 @@
+;;;; formulador.asd
+;;;; Copyright (c) 2011-2013 Robert Smith
+
 (defpackage #:formulador-asd
   (:use :cl :asdf))
 
@@ -5,13 +8,14 @@
 
 (defsystem formulador
   :name "formulador"
-  :version "0.0.1"
+  :version "0.0.2"
   :maintainer "Robert Smith"
-  :author "Robert Smith"
+  :author "Robert Smith <quad@symbo1ics.com>"
   :description "Formula renderer."
   :long-description "A mathematical formula pretty printer."
   :serial t
   :components ((:file "package")
-               (:file "formulador")
-               (:file "render"))
-  :depends-on ("vecto"))
+               (:file "canvas")
+               (:file "boxes")
+               (:file "blit")
+               (:file "render")))
