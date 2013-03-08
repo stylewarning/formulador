@@ -23,7 +23,7 @@
    #:empty-box
    #:string-box
    #:frac-box
-   #:*frac-box-vinculum-spacing*
+   #:*frac-box-vinculum-padding*
    #:frame-box
    #:row-box)
   
