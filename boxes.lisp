@@ -134,10 +134,23 @@
   (loop :for item :in (row-box-contents box)
         :maximize (height item)))
 
-;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; Picture Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defstruct (picture-box (:include box)
+                        (:constructor picture-box (picture)))
+  picture)
+
+(defmethod width ((box picture-box))
+  (length (reduce (lambda (a b)
+                    (if (>= (length a) (length b)) a b))
+                  (picture-box-picture box)
+                  :initial-value '())))
+
+(defmethod height ((box picture-box))
+  (length (picture-box-picture box)))
+
+;;;;;;;;;
 ;;; column-box
-;;; picture-box
 ;;; script-box
 
 

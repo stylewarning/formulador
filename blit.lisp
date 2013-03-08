@@ -128,3 +128,8 @@
                  
                  (rec (rest boxes) (+ x padding (width (first boxes)))))))
       (rec (row-box-contents box) x))))
+
+(defmethod blit (canvas (box picture-box) x y)
+  (loop :for c :in (picture-box-picture box)
+        :for i :from 0
+        :do (blit canvas c x (+ y i))))
