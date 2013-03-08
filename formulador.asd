@@ -11,6 +11,7 @@
   :version "0.0.2"
   :maintainer "Robert Smith"
   :author "Robert Smith <quad@symbo1ics.com>"
+  :license "BSD 3-clause (see LICENSE)"
   :description "Formula renderer."
   :long-description "A mathematical formula pretty printer."
   :serial t
