@@ -19,4 +19,5 @@
                (:file "canvas")
                (:file "boxes")
                (:file "blit")
-               (:file "render")))
+               (:file "render")
+               (:file "constructions")))

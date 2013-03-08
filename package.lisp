@@ -25,7 +25,8 @@
    #:frac-box
    #:*frac-box-vinculum-padding*
    #:frame-box
-   #:row-box)
+   #:row-box
+   #:picture-box)
   
   ;; blit.lisp
   ;; Do we really want to export this junk?
@@ -35,5 +36,10 @@
   ;; render.lisp
   (:export
    #:draw)
+  
+  ;; constructions.lisp
+  (:export
+   #:glue
+   #:+sigma+)
   
   (:documentation "Formula renderering package."))
