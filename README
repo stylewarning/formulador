@@ -1,0 +1,84 @@
+                              FORMULADOR
+                              ==========
+
+                           By Robert Smith
+
+Formulador is intended to be a text-based formula renderer, and maybe
+editor one day.
+
+It is still a work-in-progress; we can't reinvent an ad hoc,
+informally-specified, bug-ridden, slow implementation of half of TeX
+overnight.
+
+The way it works right now is simple: build your typesetting object,
+and draw it out to a canvas. Formulador will take the liberty of
+making the canvas for you.
+
+Fundamentally, as it stands, input is composed of boxes. Each box
+contains an element you'd like to typeset. Right now we have the
+following boxes
+
+    * empty-box (a sort of no-op; typesets as nothing)
+    * strings (typeset as themselves)
+    * characters (typeset as themselves)
+    * string-box (a wrapper for a string)
+    * frac-box (fractions)
+    * row-box (a horizontal concatenation of boxes)
+    * frame-box (a box with decorative appeal)
+
+These will be extended and given more options over time.
+
+Here is a simple example:
+
+> (draw (frac-box "x" "y"))
++---+
+| x |
+|---|
+| y |
++---+
+
+And a more complex example:
+
+> (draw
+   (frac-box (row-box (list
+                       (frac-box "x" "y")
+                       "+"
+                       (frac-box "w"
+                                 (row-box (list "u" "+" "v") :padding 1)))
+                      :padding 1)
+             (frac-box (row-box (list "p" "+" "q") :padding 1)
+                       (row-box (list "r" "+" (frac-box "1" "s")) :padding 1))))
++---------------+
+|  x       w    |
+| --- + ------- |
+|  y     u + v  |
+|---------------|
+|     p + q     |
+|   ---------   |
+|         1     |
+|    r + ---    |
+|         s     |
++---------------+
+
+And finally:
+
+> (defun interleave (x list)
+    (rest (mapcan (lambda (y) (list x y)) list)))
+INTERLEAVE
+> (interleave '* '(x y z))
+(X * Y * Z)
+> (draw
+   (frac-box
+    "1"
+    (row-box (interleave "+" (map 'list
+                                  (lambda (c)
+                                    (frac-box "1" c))
+                                  "rtoyg"))
+             :padding 1)))
++-----------------------------+
+|              1              |
+|-----------------------------|
+|  1     1     1     1     1  |
+| --- + --- + --- + --- + --- |
+|  r     t     o     y     g  |
++-----------------------------+
