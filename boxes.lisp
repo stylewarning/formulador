@@ -151,7 +151,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct (parens-box (:include box)
-		       (:constructor parens-box (contents)))
+                       (:constructor parens-box (contents)))
   contents)
 
 (defmethod width ((box parens-box))
