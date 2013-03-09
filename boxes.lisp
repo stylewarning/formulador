@@ -148,6 +148,20 @@
 (defmethod height ((box picture-box))
   (length (picture-box-picture box)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (parens-box (:include box)
+		       (:constructor parens-box (contents)))
+  contents)
+
+(defmethod width ((box parens-box))
+  (case (height (parens-box-contents box))
+    ((1 2) (+ 2 (width (parens-box-contents box))))
+    (otherwise (+ 4 (width (parens-box-contents box))))))
+
+(defmethod height ((box parens-box))
+  (height (parens-box-contents box)))
+
 ;;;;;;;;;
 ;;; column-box
 ;;; script-box

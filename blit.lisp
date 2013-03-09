@@ -133,3 +133,19 @@
   (loop :for c :in (picture-box-picture box)
         :for i :from 0
         :do (blit canvas c x (+ y i))))
+
+(defmethod blit (canvas (box parens-box) x y)
+  (let* ((contents (parens-box-contents box))
+	 (h (height contents)))
+    (if (= h 1)
+	(blit canvas (glue "(" contents ")") x y)
+	(progn
+	  (blit canvas contents (+ x 2) y)
+	  (blit canvas "/"  x y)
+	  (blit canvas "\\" (+ x (width contents) 3) y)
+	  (loop :for i :from 1 :to (1- h)
+		:do (progn
+		      (blit canvas "|" x (+ y i))
+		      (blit canvas "|" (+ x (width contents) 3) (+ y i))))
+	  (blit canvas "\\" x (+ y (- h 1)))
+	  (blit canvas "/"  (+ x (width contents) 3) (+ y (- h 1)))))))
