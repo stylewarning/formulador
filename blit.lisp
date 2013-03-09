@@ -136,7 +136,7 @@
 
 (defmethod blit (canvas (box parens-box) x y)
   (let* ((contents (parens-box-contents box))
-         (h (height contents)))
+         (h (height box)))
     (if (= h 1)
         (blit canvas (glue #\( contents #\)) x y)
         (progn
