@@ -148,16 +148,21 @@
 (defmethod height ((box picture-box))
   (length (picture-box-picture box)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct (parens-box (:include box)
                        (:constructor parens-box (contents)))
   contents)
 
 (defmethod width ((box parens-box))
-  (case (height (parens-box-contents box))
-    ((1 2) (+ 2 (width (parens-box-contents box))))
-    (otherwise (+ 4 (width (parens-box-contents box))))))
+  (let ((w (width (parens-box-contents box)))
+        (h (height (parens-box-contents box))))
+    (+ w
+       (if (or (= h 1)
+               (= h 2))
+           2
+           4))))
 
 (defmethod height ((box parens-box))
   (height (parens-box-contents box)))
