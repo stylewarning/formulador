@@ -159,15 +159,14 @@
   (let ((w (width (parens-box-contents box)))
         (h (height (parens-box-contents box))))
     (+ w
-       (if (or (= h 0)
-	       (= h 1)
-               (= h 2))
-           2
-           4))))
+       (if (<= 0 h 2)
+           2                            ; Small contents are printed as (x).
+           4))))                        ; Large contents have extra spacing.
 
 (defmethod height ((box parens-box))
   (let ((h (height (parens-box-contents box))))
-    (if (= h 0) 1 h)))
+    (if (zerop h) 1 h)))
+
 
 ;;;;;;;;;
 ;;; column-box
