@@ -159,13 +159,15 @@
   (let ((w (width (parens-box-contents box)))
         (h (height (parens-box-contents box))))
     (+ w
-       (if (or (= h 1)
+       (if (or (= h 0)
+	       (= h 1)
                (= h 2))
            2
            4))))
 
 (defmethod height ((box parens-box))
-  (height (parens-box-contents box)))
+  (let ((h (height (parens-box-contents box))))
+    (if (= h 0) 1 h)))
 
 ;;;;;;;;;
 ;;; column-box
