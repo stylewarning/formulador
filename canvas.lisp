@@ -1,5 +1,8 @@
 ;;;; canvas.lisp
+;;;;
 ;;;; Copyright (c) 2013 Robert Smith
+;;;;
+;;;; A simple notion of a "canvas" on which we can draw formulas.
 
 (in-package #:formulador)
 
@@ -11,17 +14,21 @@
   data)
 
 (defun make-canvas (width height)
+  "Make a new canvas of width WIDTH and height HEIGHT."
   (%make-canvas :data (make-array (list height width)
                                   :element-type 'character
                                   :initial-element #\Space)))
 
 (defun canvas-dimensions (canvas)
+  "Return the dimensions of the canvas (WIDTH HEIGHT)."
   (reverse (array-dimensions (canvas-data canvas))))
 
 (defun canvas-ref (canvas x y)
+  "Obtain the character (X, Y) in the canvas CANVAS."
   (aref (canvas-data canvas) y x))
 
 (defun canvas-set (canvas x y new-data)
+  "Set the character at (X, Y) in the canvas CANVAS to the value NEW-DATA."
   (setf (aref (canvas-data canvas) y x)
         new-data))
 

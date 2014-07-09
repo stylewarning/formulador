@@ -1,14 +1,40 @@
 ;;;; boxes.lisp
-;;;; Copyright (c) 2013 Robert Smith
+;;;;
+;;;; Copyright (c) 2013-2014 Robert Smith
+;;;;
+;;;; Basic building blocks of a "formula".
 
 (in-package #:formulador)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;; Generic Box Operations ;;;;;;;;;;;;;;;;;;;;;;;
 
-(defgeneric width (object))
-(defgeneric height (object))
+;;; Here, the # marks represent the "bounding box".
+;;;
+;;;                  WIDTH (19)
+;;;           |<----------------->|
+;;;       --- #####################
+;;;        ^  #                   #  |
+;;; HEIGHT |  #                   #  v
+;;;  (4)   |  #-------------------# ---
+;;;        v  #                   #     BASELINE (1)
+;;;       --- ##################### ---
+;;;                                  ^
+;;;                                  |
 
+(defgeneric width (object)
+  (:documentation "The width of a box. This is the number of characters a box requires horizontally."))
+
+(defgeneric height (object)
+  (:documentation "The height of a box. This is the number of characters a box requires vertically."))
+
+(defgeneric baseline (object)
+  (:documentation "The baseline of a box. This is the number of characters that a box would need to be translated downward in order to be properly aligned."))
+
+(defun height-above-baseline (object)
+  "Compute the height of an object above the baseline."
+  (- (height object)
+     (baseline object)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -43,6 +69,9 @@
 (defmethod height ((box empty-box))
   0)
 
+(defmethod baseline ((box empty-box))
+  0)
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Characters as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod width ((char character))
@@ -51,6 +80,8 @@
 (defmethod height ((char character))
   1)
 
+(defmethod baseline ((char character))
+  0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Strings as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -60,6 +91,8 @@
 (defmethod height ((str string))
   1)
 
+(defmethod baseline ((str string))
+  0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; String Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -74,14 +107,20 @@
   (declare (ignore box))
   1)
 
+(defmethod baseline ((box string-box))
+  (declare (ignore box))
+  0)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Fraction Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar *frac-box-vinculum-padding* 1)
+(defvar *frac-box-vinculum-padding* 1
+  "The amount by which to stretch each side of the vinculum.")
 
 (defstruct (frac-box (:include box)
                      (:constructor frac-box (numerator denominator)))
-  numerator denominator)
+  numerator
+  denominator)
 
 (defmethod width ((box frac-box))
   (+ (* 2 *frac-box-vinculum-padding*)
@@ -93,6 +132,8 @@
      (height (frac-box-numerator box))
      (height (frac-box-denominator box))))
 
+(defmethod baseline ((box frac-box))
+  (height (frac-box-denominator box)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frame Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -108,6 +149,8 @@
   (+ 2
      (height (frame-box-contents box))))
 
+(defmethod baseline ((box frame-box))
+  (1+ (baseline (frame-box-contents box))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Row Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -124,7 +167,8 @@
   ;; include padding?
   (let* ((items (row-box-contents box))
          (nb-items (length items)))
-    (+ (reduce #'+ items :key #'width)
+    (+ (reduce #'+ items :key #'width
+                         :initial-value 0)
        (if (zerop nb-items)
            0
            (* (1- nb-items)
@@ -132,14 +176,19 @@
 
 (defmethod height ((box row-box))
   (loop :for item :in (row-box-contents box)
-        :maximize (height item)))
+        :maximize (height-above-baseline item) :into max-extent
+        :finally (return (+ max-extent (baseline box)))))
 
+(defmethod baseline ((box row-box))
+  (loop :for item :in (row-box-contents box)
+        :maximize (baseline item)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Picture Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct (picture-box (:include box)
-                        (:constructor picture-box (picture)))
-  picture)
+                        (:constructor picture-box (picture &key baseline)))
+  picture
+  (baseline 0))
 
 (defmethod width ((box picture-box))
   (reduce #'max (picture-box-picture box) :key #'length
@@ -148,6 +197,8 @@
 (defmethod height ((box picture-box))
   (length (picture-box-picture box)))
 
+(defmethod baseline ((box picture-box))
+  (picture-box-baseline box))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -166,6 +217,9 @@
 (defmethod height ((box parens-box))
   (let ((h (height (parens-box-contents box))))
     (if (zerop h) 1 h)))
+
+(defmethod baseline ((box parens-box))
+  (baseline (parens-box-contents box)))
 
 
 ;;;;;;;;;
