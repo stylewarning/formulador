@@ -236,3 +236,30 @@
         (+ y
            (height (script-box-superscript box))
            (height (script-box-base box)))))
+
+(defmethod blit (canvas (box limits-box) x y)
+  (let ((width (width box)))
+    (flet ((centering-offset (item)
+             (let ((item-width (width item)))
+               (if (> width item-width)
+                   (floor (- width item-width) 2)
+                   0))))
+      ;; Blit the base.
+      (blit canvas
+            (limits-box-base box)
+            (+ x (centering-offset (limits-box-base box)))
+            (+ y (height (limits-box-above box))))
+      
+      ;; Blit the limit above.
+      (blit canvas
+            (limits-box-above box)
+            (+ x (centering-offset (limits-box-above box)))
+            y)
+      
+      ;; Blit the limit below.
+      (blit canvas
+            (limits-box-below box)
+            (+ x (centering-offset (limits-box-below box)))
+            (+ y
+               (height (limits-box-above box))
+               (height (limits-box-base box)))))))
