@@ -77,6 +77,20 @@
 (defmethod baseline ((box empty-box))
   0)
 
+;;; Should we make NIL an empty box?
+
+#+#:ignore
+(progn
+  (defmethod width ((box null))
+    0)
+
+  (defmethod height ((box null))
+    0)
+
+  (defmethod baseline ((box null))
+    0))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Characters as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod width ((char character))
@@ -226,8 +240,34 @@
   (baseline (parens-box-contents box)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Script Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (script-box (:include box)
+                       (:constructor script-box (base &key superscript subscript)))
+  base
+  (superscript (empty-box))
+  (subscript (empty-box))
+  ;; presuperscript
+  ;; presubscript
+  ;; over
+  ;; under
+  )
+
+(defmethod width ((box script-box))
+  (+ (width (script-box-base box))
+     (max (width (script-box-superscript box))
+          (width (script-box-subscript box)))))
+
+(defmethod height ((box script-box))
+  (+ (height (script-box-base box))
+     (height (script-box-superscript box))
+     (height (script-box-subscript box))))
+
+(defmethod baseline ((box script-box))
+  (+ (baseline (script-box-base box))
+     (height (script-box-subscript box))))
+
 ;;;;;;;;;
 ;;; column-box
-;;; script-box
 
 

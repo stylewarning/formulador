@@ -10,6 +10,10 @@
   "Glue together (horizontally) all of ITEMS."
   (row-box items))
 
+(defun tape (&rest items)
+  "Tape together (horizontally) all of ITEMS."
+  (row-box items :padding 1))
+
 (defvar +sigma+
   (picture-box '("==="
                  "\\"
