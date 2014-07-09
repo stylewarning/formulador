@@ -40,7 +40,8 @@
 
 (defstruct (box (:constructor %make-box))
   cached-width
-  cached-height)
+  cached-height
+  cached-baseline)
 
 (defmethod width :around ((box box))
   (or (box-cached-width box)
@@ -50,6 +51,11 @@
 (defmethod height :around ((box box))
   (or (box-cached-height box)
       (setf (box-cached-height box)
+            (call-next-method box))))
+
+(defmethod baseline :around ((box box))
+  (or (box-cached-baseline box)
+      (setf (box-cached-baseline box)
             (call-next-method box))))
 
 
