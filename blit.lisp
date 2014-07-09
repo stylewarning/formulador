@@ -42,6 +42,9 @@
         :do (setf (canvas-ref canvas (+ x i) y)
                   c)))
 
+(defparameter *vinculum-charmap* *ascii-vinculum-charmap*
+  "The charmap to use when drawing the vinculum.")
+
 (defmethod blit (canvas (box frac-box) x y)
   (let* ((total-width (width box))
          (padding (* 2 *frac-box-vinculum-padding*))
@@ -67,18 +70,11 @@
       
       ;; Blit the fraction bar
       (loop :for i :from mid-x :below (+ mid-x total-width)
-            :do (setf (canvas-ref canvas i mid-y) #\-)))))
+            :do (setf (canvas-ref canvas i mid-y)
+                      *vinculum-charmap*)))))
 
-;;; XXX: We may want to put this in its own structure.
-(defparameter *frame-top-left* #\+)
-(defparameter *frame-top-right* #\+)
-(defparameter *frame-bottom-left* #\+)
-(defparameter *frame-bottom-right* #\+)
-
-(defparameter *frame-left* #\|)
-(defparameter *frame-right* #\|)
-(defparameter *frame-top* #\-)
-(defparameter *frame-bottom* #\-)
+(defparameter *frame-charmap* *ascii-plain-frame-charmap*
+  "The charmap to use when drawing a frame.")
 
 (defmethod blit (canvas (box frame-box) x y)  
   ;; Blit the left side.
@@ -86,49 +82,50 @@
                        x
                        (1+ y)
                        (+ y (height (frame-box-contents box)))
-                       :char *frame-left*)
+                       :char (frame-charmap-left-edge *frame-charmap*))
   
   ;; Blit the right side.
   (paint-vertical-line canvas 
                        (+ 1 x (width (frame-box-contents box)))
                        (1+ y)
                        (+ y (height (frame-box-contents box)))
-                       :char *frame-right*)
+                       :char (frame-charmap-right-edge *frame-charmap*))
   
   ;; Blit the top side.
   (paint-horizontal-line canvas
                          y
                          (1+ x)
                          (+ x (width (frame-box-contents box)))
-                         :char *frame-top*)
+                         :char (frame-charmap-top-edge *frame-charmap*))
   
   ;; Blit the bottom side.
   (paint-horizontal-line canvas 
                          (+ 1 y (height (frame-box-contents box)))
                          (1+ x)
                          (+ x (width (frame-box-contents box)))
-                         :char *frame-bottom*)
+                         :char (frame-charmap-bottom-edge *frame-charmap*))
   
   ;; Blit the top-left corner.
-  (setf (canvas-ref canvas x y) *frame-top-left*)
+  (setf (canvas-ref canvas x y)
+        (frame-charmap-top-left-corner *frame-charmap*))
   
   ;; Blit the top-right corner.
   (setf (canvas-ref canvas
                     (+ 1 x (width (frame-box-contents box)))
                     y)
-        *frame-top-right*)
+        (frame-charmap-top-right-corner *frame-charmap*))
   
   ;; Blit the bottom-left corner.
   (setf (canvas-ref canvas
                     x
                     (+ 1 y (height (frame-box-contents box))))
-        *frame-bottom-left*)
+        (frame-charmap-bottom-left-corner *frame-charmap*))
   
   ;; Blit the bottom-right corner.
   (setf (canvas-ref canvas
                     (+ 1 x (width (frame-box-contents box)))
                     (+ 1 y (height (frame-box-contents box))))
-        *frame-bottom-right*)
+        (frame-charmap-bottom-right-corner *frame-charmap*))
   
   ;; Blit the frame contents.
   (blit canvas (frame-box-contents box) (1+ x) (1+ y)))
@@ -170,37 +167,51 @@
         :for i :from 0
         :do (blit canvas c x (+ y i))))
 
-;;; XXX: We may want to put this in its own structure.
-(defparameter *paren-small-left* #\()
-(defparameter *paren-small-right* #\))
-
-(defparameter *paren-top-left*     #\/)
-(defparameter *paren-top-right*    #\\)
-(defparameter *paren-middle-left*  #\|)
-(defparameter *paren-middle-right* #\|)
-(defparameter *paren-bottom-left*  #\\)
-(defparameter *paren-bottom-right* #\/)
+(defparameter *paren-charmap* *ascii-paren-charmap*
+  "The charmap to use when drawing parentheses.")
 
 (defmethod blit (canvas (box parens-box) x y)
   (let* ((contents (parens-box-contents box))
          (h (height box)))
     (if (= h 1)
-        (blit canvas (glue *paren-small-left*
+        (blit canvas (glue (paren-charmap-small-open *paren-charmap*)
                            contents
-                           *paren-small-right*) x y)
+                           (paren-charmap-small-close *paren-charmap*))
+              x y)
         (progn
           ;; Blit the contents within the parentheses.
           (blit canvas contents (+ x 2) y)
           
           ;; Blit the tops of each parenthesis.
-          (blit canvas *paren-top-left* x y)
-          (blit canvas *paren-top-right* (+ x (width contents) 3) y)
+          (blit canvas
+                (paren-charmap-top-open *paren-charmap*)
+                x
+                y)
+
+          (blit canvas
+                (paren-charmap-top-close *paren-charmap*)
+                (+ x (width contents) 3)
+                y)
           
           ;; Blit the centers of each parenthesis.
           (loop :for i :from 1 :below h :do 
-            (blit canvas *paren-middle-left* x (+ y i))
-            (blit canvas *paren-middle-right* (+ x (width contents) 3) (+ y i)))
+            (blit canvas
+                  (paren-charmap-middle-open *paren-charmap*)
+                  x 
+                  (+ y i))
+
+            (blit canvas
+                  (paren-charmap-middle-close *paren-charmap*)
+                  (+ x (width contents) 3) 
+                  (+ y i)))
           
           ;; Blit the bottoms of each parenthesis.
-          (blit canvas *paren-bottom-left* x (+ y (- h 1)))
-          (blit canvas *paren-bottom-right* (+ x (width contents) 3) (+ y (- h 1)))))))
+          (blit canvas
+                (paren-charmap-bottom-open *paren-charmap*)
+                x
+                (+ y (- h 1)))
+
+          (blit canvas
+                (paren-charmap-bottom-close *paren-charmap*)
+                (+ x (width contents) 3)
+                (+ y (- h 1)))))))
