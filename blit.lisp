@@ -24,8 +24,22 @@
 (defgeneric blit (canvas object x y))
 
 (defmethod blit (canvas (box empty-box) x y)
+  (declare (ignore canvas box x y))
   ;; do nothing
   )
+
+(defmethod blit (canvas (box glass-box) x y)
+  (blit canvas
+        (glass-box-contents box)
+        x
+        y))
+
+(defmethod blit (canvas (box phantom-box) x y)
+  (declare (ignore canvas box x y))
+  ;; do nothing
+  )
+
+
 
 (defmethod blit (canvas (char character) x y)
   (setf (canvas-ref canvas x y) char))
