@@ -267,6 +267,31 @@
   (+ (baseline (script-box-base box))
      (height (script-box-subscript box))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Limits Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (limits-box (:include box)
+                       (:constructor limits-box (base &key above below)))
+  base
+  (above (empty-box))
+  (below (empty-box)))
+
+(defmethod width ((box limits-box))
+  (max (width (limits-box-base box))
+       (width (limits-box-above box))
+       (width (limits-box-below box))))
+
+(defmethod height ((box limits-box))
+  (+ (height (limits-box-base box))
+     (height (limits-box-above box))
+     (height (limits-box-below box))))
+
+(defmethod baseline ((box limits-box))
+  (+ (baseline (limits-box-base box))
+     (height (limits-box-below box))))
+
+
+
 ;;;;;;;;;
 ;;; column-box
 

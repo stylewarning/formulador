@@ -26,6 +26,7 @@ following boxes
     * row-box (a horizontal concatenation of boxes)
     * frame-box (a box with decorative appeal)
     * script-box (superscripts and subscripts)
+    * limits-box (limits for operators)
 
 These will be extended and given more options over time.
 
