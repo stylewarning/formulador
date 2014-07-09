@@ -1,5 +1,8 @@
 ;;;; constructions.lisp
-;;;; Copyright (c) 2013 Robert Smith
+;;;;
+;;;; Copyright (c) 2013-2014 Robert Smith
+;;;;
+;;;; Various constructions based off of primitive constructions.
 
 (in-package #:formulador)
 
@@ -12,5 +15,6 @@
                  "\\"
                  " >"
                  "/"
-                 "==="))
+                 "===")
+               :baseline 2)
   "The capital sigma symbol used for summation.")

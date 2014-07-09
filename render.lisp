@@ -1,7 +1,8 @@
 ;;;; render.lisp
-;;;; Copyright (c) 2011-2012 Robert Smith
-
-;;; Facility to render boxes.
+;;;;
+;;;; Copyright (c) 2011-2014 Robert Smith
+;;;;
+;;;; A facility to conveniently render boxes.
 
 (in-package #:formulador)
 

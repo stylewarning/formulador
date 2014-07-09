@@ -1,5 +1,9 @@
 ;;;; blit.lisp
-;;;; Copyright (c) 2013 Robert Smith
+;;;;
+;;;; Copyright (c) 2013-2014 Robert Smith
+;;;;
+;;;; The logic to "blit", or write out, the graphical construction of
+;;;; a formula.
 
 (in-package #:formulador)
 
@@ -65,8 +69,7 @@
       (loop :for i :from mid-x :below (+ mid-x total-width)
             :do (setf (canvas-ref canvas i mid-y) #\-)))))
 
-(defmethod blit (canvas (box frame-box) x y)
-  
+(defmethod blit (canvas (box frame-box) x y)  
   ;; left side
   (paint-vertical-line canvas
                        x
@@ -115,15 +118,26 @@
   ;; frame contents
   (blit canvas (frame-box-contents box) (1+ x) (1+ y)))
 
+;;;
+;;; **    **
+;;; ** ** **
+;;; -- -- --
+;;; ** **
+;;;    **
 (defmethod blit (canvas (box row-box) x y)
   (let ((padding (row-box-padding box))
-        (height (height box)))
+        (height (height box))
+        (baseline (baseline box))
+        (extent (height-above-baseline box)))
     (labels ((rec (boxes x)
                (unless (null boxes)
                  (let ((the-box (first boxes)))
                    (blit canvas 
                          the-box 
                          x
+                         ;; Align on the baselines.
+                         (+ y (- extent (height-above-baseline the-box)))
+                         #+#:ignore     ; This will vertically center
                          (+ y (floor (- height (height the-box)) 2))))
                  
                  (rec (rest boxes) (+ x padding (width (first boxes)))))))

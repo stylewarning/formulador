@@ -1,6 +1,7 @@
 ;;;; package.lisp
-;;;; Copyright (c) 2011-2013 Robert Smith
-
+;;;;
+;;;; Copyright (c) 2011-2014 Robert Smith
+;;;;
 ;;;; Declare the formulador package.
 
 (defpackage #:formulador
@@ -18,6 +19,7 @@
   (:export
    #:width                              ; export?
    #:height                             ; export?
+   #:baseline                           ; export?
    
    #:box                                ; export predicates?
    #:empty-box
