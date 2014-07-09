@@ -118,6 +118,11 @@
   ;; frame contents
   (blit canvas (frame-box-contents box) (1+ x) (1+ y)))
 
+;;; It is the job of the BLIT method of a ROW-BOX (and other
+;;; concatenative boxes) to take care of baselines.
+;;;
+;;; Below is an example of boxes for a ROW-BOX where "--" is the
+;;; baseline of each box.
 ;;;
 ;;; **    **
 ;;; ** ** **
@@ -126,7 +131,9 @@
 ;;;    **
 (defmethod blit (canvas (box row-box) x y)
   (let ((padding (row-box-padding box))
+        #+#:ignore
         (height (height box))
+        #+#:ignore
         (baseline (baseline box))
         (extent (height-above-baseline box)))
     (labels ((rec (boxes x)
@@ -148,18 +155,37 @@
         :for i :from 0
         :do (blit canvas c x (+ y i))))
 
+;;; XXX: We may want to put this in its own structure.
+(defparameter *paren-small-left* #\()
+(defparameter *paren-small-right* #\))
+
+(defparameter *paren-top-left*     #\/)
+(defparameter *paren-top-right*    #\\)
+(defparameter *paren-middle-left*  #\|)
+(defparameter *paren-middle-right* #\|)
+(defparameter *paren-bottom-left*  #\\)
+(defparameter *paren-bottom-right* #\/)
+
 (defmethod blit (canvas (box parens-box) x y)
   (let* ((contents (parens-box-contents box))
          (h (height box)))
     (if (= h 1)
-        (blit canvas (glue #\( contents #\)) x y)
+        (blit canvas (glue *paren-small-left*
+                           contents
+                           *paren-small-right*) x y)
         (progn
+          ;; Blit the contents within the parentheses.
           (blit canvas contents (+ x 2) y)
-          (blit canvas #\/  x y)
-          (blit canvas #\\ (+ x (width contents) 3) y)
-          (loop :for i :from 1 :below h
-                :do (progn
-                      (blit canvas #\| x (+ y i))
-                      (blit canvas #\| (+ x (width contents) 3) (+ y i))))
-          (blit canvas #\\ x (+ y (- h 1)))
-          (blit canvas #\/  (+ x (width contents) 3) (+ y (- h 1)))))))
+          
+          ;; Blit the tops of each parenthesis.
+          (blit canvas *paren-top-left* x y)
+          (blit canvas *paren-top-right* (+ x (width contents) 3) y)
+          
+          ;; Blit the centers of each parenthesis.
+          (loop :for i :from 1 :below h :do 
+            (blit canvas *paren-middle-left* x (+ y i))
+            (blit canvas *paren-middle-right* (+ x (width contents) 3) (+ y i)))
+          
+          ;; Blit the bottoms of each parenthesis.
+          (blit canvas *paren-bottom-left* x (+ y (- h 1)))
+          (blit canvas *paren-bottom-right* (+ x (width contents) 3) (+ y (- h 1)))))))
