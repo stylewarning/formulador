@@ -19,6 +19,7 @@
   :components ((:file "package")
                (:file "utilities")
                (:file "canvas")
+               (:file "charmap")
                (:file "boxes")
                (:file "blit")
                (:file "render")

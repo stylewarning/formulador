@@ -60,7 +60,7 @@ And a more complex example:
 |         s     |
 +---------------+
 
-And finally:
+Demonstration of the use of combinators:
 
 > (defun interleave (x list)
     (rest (mapcan (lambda (y) (list x y)) list)))
@@ -82,6 +82,9 @@ INTERLEAVE
 | --- + --- + --- + --- + --- |
 |  r     t     o     y     g  |
 +-----------------------------+
+
+
+Baseline test:
 
 > (draw (glue +sigma+
               (row-box (list (frac-box (frac-box "x + y" "z")
@@ -111,3 +114,40 @@ INTERLEAVE
 |               | |  q      |     ||
 |               \ +---------+     /|
 +----------------------------------+
+
+Now with Unicode...
+
+> (let ((*frame-charmap* *unicode-plain-frame-charmap*)
+        (*vinculum-charmap* *unicode-vinculum-charmap*)
+        (*paren-charmap* *unicode-paren-charmap*))
+    (draw (glue +sigma+
+                (row-box (list (frac-box (frac-box "x + y" "z")
+                                         "b")
+                               "+"
+                               (parens-box
+                                (row-box
+                                 (list (frame-box (frac-box
+                                                   "c"
+                                                   (row-box (list
+                                                             (frame-box
+                                                              (frac-box "p"
+                                                                        "q"))
+                                                             "+"
+                                                             "r")
+                                                            :padding 1)))
+                                       "*" 
+                                       "r")
+                                 :padding 1)))
+                         :padding 1))))
++------------------------------------+
+|     x + y                          |
+|=== ───────    ⎛ ┌───────────┐     ⎞|
+|\      z       ⎜ │     c     │     ⎟|
+| > ───────── + ⎜ │───────────│ * r ⎟|
+|/      b       ⎜ │ ┌───┐     │     ⎟|
+|===            ⎜ │ │ p │     │     ⎟|
+|               ⎜ │ │───│ + r │     ⎟|
+|               ⎜ │ │ q │     │     ⎟|
+|               ⎜ │ └───┘     │     ⎟|
+|               ⎝ └───────────┘     ⎠|
++------------------------------------+
