@@ -90,6 +90,36 @@
   (defmethod baseline ((box null))
     0))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Glass Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (glass-box (:include box)
+                      (:constructor glass-box (contents)))
+  contents)
+
+(defmethod width ((box glass-box))
+  (width (glass-box-contents box)))
+
+(defmethod height ((box glass-box))
+  (height (glass-box-contents box)))
+
+(defmethod baseline ((box glass-box))
+  (baseline (glass-box-contents box)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; Phantom Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (phantom-box (:include box)
+                        (:constructor phantom-box (contents)))
+  contents)
+
+(defmethod width ((box phantom-box))
+  (width (phantom-box-contents box)))
+
+(defmethod height ((box phantom-box))
+  (height (phantom-box-contents box)))
+
+(defmethod baseline ((box phantom-box))
+  (baseline (phantom-box-contents box)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Characters as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;
 
