@@ -1,5 +1,6 @@
 ;;;; formulador.asd
-;;;; Copyright (c) 2011-2013 Robert Smith
+;;;;
+;;;; Copyright (c) 2011-2014 Robert Smith
 
 (defpackage #:formulador-asd
   (:use :cl :asdf))
@@ -16,6 +17,7 @@
   :long-description "A mathematical formula pretty printer."
   :serial t
   :components ((:file "package")
+               (:file "utilities")
                (:file "canvas")
                (:file "boxes")
                (:file "blit")

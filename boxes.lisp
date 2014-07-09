@@ -58,7 +58,6 @@
       (setf (box-cached-baseline box)
             (call-next-method box))))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; The Empty Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct (empty-box (:include box)
@@ -173,21 +172,20 @@
   ;; include padding?
   (let* ((items (row-box-contents box))
          (nb-items (length items)))
-    (+ (reduce #'+ items :key #'width
-                         :initial-value 0)
+    (+ (sum items :key #'width)
        (if (zerop nb-items)
            0
            (* (1- nb-items)
               (row-box-padding box))))))
 
 (defmethod height ((box row-box))
-  (loop :for item :in (row-box-contents box)
-        :maximize (height-above-baseline item) :into max-extent
-        :finally (return (+ max-extent (baseline box)))))
+  (+ (baseline box)
+     (maximum (row-box-contents box)
+              :key #'height-above-baseline)))
 
 (defmethod baseline ((box row-box))
-  (loop :for item :in (row-box-contents box)
-        :maximize (baseline item)))
+  (maximum (row-box-contents box)
+           :key #'baseline))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Picture Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -197,8 +195,8 @@
   (baseline 0))
 
 (defmethod width ((box picture-box))
-  (reduce #'max (picture-box-picture box) :key #'length
-                                          :initial-value 0))
+  (maximum (picture-box-picture box)
+           :key #'length))
 
 (defmethod height ((box picture-box))
   (length (picture-box-picture box)))
