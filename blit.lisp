@@ -69,53 +69,68 @@
       (loop :for i :from mid-x :below (+ mid-x total-width)
             :do (setf (canvas-ref canvas i mid-y) #\-)))))
 
+;;; XXX: We may want to put this in its own structure.
+(defparameter *frame-top-left* #\+)
+(defparameter *frame-top-right* #\+)
+(defparameter *frame-bottom-left* #\+)
+(defparameter *frame-bottom-right* #\+)
+
+(defparameter *frame-left* #\|)
+(defparameter *frame-right* #\|)
+(defparameter *frame-top* #\-)
+(defparameter *frame-bottom* #\-)
+
 (defmethod blit (canvas (box frame-box) x y)  
-  ;; left side
+  ;; Blit the left side.
   (paint-vertical-line canvas
                        x
                        (1+ y)
-                       (+ y (height (frame-box-contents box))))
+                       (+ y (height (frame-box-contents box)))
+                       :char *frame-left*)
   
-  ;; right side
+  ;; Blit the right side.
   (paint-vertical-line canvas 
                        (+ 1 x (width (frame-box-contents box)))
                        (1+ y)
-                       (+ y (height (frame-box-contents box))))
+                       (+ y (height (frame-box-contents box)))
+                       :char *frame-right*)
   
-  ;; top side
+  ;; Blit the top side.
   (paint-horizontal-line canvas
                          y
                          (1+ x)
-                         (+ x (width (frame-box-contents box))))
+                         (+ x (width (frame-box-contents box)))
+                         :char *frame-top*)
   
-  ;; bottom side
+  ;; Blit the bottom side.
   (paint-horizontal-line canvas 
                          (+ 1 y (height (frame-box-contents box)))
                          (1+ x)
-                         (+ x (width (frame-box-contents box))))
+                         (+ x (width (frame-box-contents box)))
+                         :char *frame-bottom*)
   
-  ;; top-left corner
-  (setf (canvas-ref canvas x y) #\+)
+  ;; Blit the top-left corner.
+  (setf (canvas-ref canvas x y) *frame-top-left*)
   
-  ;; top-right corner
+  ;; Blit the top-right corner.
   (setf (canvas-ref canvas
                     (+ 1 x (width (frame-box-contents box)))
                     y)
-        #\+)
+        *frame-top-right*)
   
-  ;; bottom-left corner
+  ;; Blit the bottom-left corner.
   (setf (canvas-ref canvas
                     x
                     (+ 1 y (height (frame-box-contents box))))
-        #\+)
+        *frame-bottom-left*)
   
-  ;; bottom-right corner
+  ;; Blit the bottom-right corner.
   (setf (canvas-ref canvas
                     (+ 1 x (width (frame-box-contents box)))
                     (+ 1 y (height (frame-box-contents box))))
-        #\+)
+        *frame-bottom-right*)
   
-  ;; frame contents
+  ;; Blit the frame contents.
   (blit canvas (frame-box-contents box) (1+ x) (1+ y)))
 
 ;;; It is the job of the BLIT method of a ROW-BOX (and other
