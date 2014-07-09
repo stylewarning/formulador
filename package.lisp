@@ -42,6 +42,7 @@
   ;; constructions.lisp
   (:export
    #:glue
+   #:tape
    #:+sigma+)
   
   (:documentation "Formula renderering package."))

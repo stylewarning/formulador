@@ -25,6 +25,7 @@ following boxes
     * frac-box (fractions)
     * row-box (a horizontal concatenation of boxes)
     * frame-box (a box with decorative appeal)
+    * script-box (superscripts and subscripts)
 
 These will be extended and given more options over time.
 
@@ -151,3 +152,25 @@ Now with Unicode...
 |               ⎜ │ └───┘     │     ⎟|
 |               ⎝ └───────────┘     ⎠|
 +------------------------------------+
+
+Superscripts and subscripts:
+
+> (flet ((x_ (n)
+           (script-box "x"
+                       :superscript "2"
+                       :subscript (prin1-to-string n))))
+    (draw
+     (glue "r"
+           " = "
+           (script-box (parens-box (glue (x_ 1)
+                                         " + "
+                                         (x_ 2)
+                                         " + "
+                                         (x_ 3)))
+                       :superscript "1/2"))))
++-----------------------+
+|                    1/2|
+|    /  2    2    2 \   |
+|r = | x  + x  + x  |   |
+|    \  1    2    3 /   |
++-----------------------+

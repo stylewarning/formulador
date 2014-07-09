@@ -215,3 +215,24 @@
                 (paren-charmap-bottom-close *paren-charmap*)
                 (+ x (width contents) 3)
                 (+ y (- h 1)))))))
+
+(defmethod blit (canvas (box script-box) x y)
+  ;; Blit the base.
+  (blit canvas
+        (script-box-base box)
+        x
+        (+ y (height (script-box-superscript box))))
+  
+  ;; Blit the superscript.
+  (blit canvas
+        (script-box-superscript box)
+        (+ x (width (script-box-base box)))
+        y)
+  
+  ;; Blit the subscript.
+  (blit canvas
+        (script-box-subscript box)
+        (+ x (width (script-box-base box)))
+        (+ y
+           (height (script-box-superscript box))
+           (height (script-box-base box)))))
