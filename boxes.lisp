@@ -321,6 +321,32 @@
      (height (limits-box-below box))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;; Square Root Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct (sqrt-box (:include box)
+                     (:constructor %sqrt-box))
+  contents
+  (power (empty-box)))
+
+(defun sqrt-box (contents &key (power (empty-box)))
+  (assert (or (zerop (height power))
+              (= 1 (height power)))
+          (power)
+          "The POWER of a SQRT-BOX must have a height of 0 or 1.")
+  (%sqrt-box :contents contents
+             :power power))
+
+(defmethod width ((box sqrt-box))
+  (+ 2
+     (max 0 (1- (width (sqrt-box-power box))))
+     (max 1 (width (sqrt-box-contents box)))))
+
+(defmethod height ((box sqrt-box))
+  (1+ (height (sqrt-box-contents box))))
+
+(defmethod baseline ((box sqrt-box))
+  (baseline (sqrt-box-contents box)))
+
 
 ;;;;;;;;;
 ;;; column-box
