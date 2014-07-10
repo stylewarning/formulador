@@ -11,7 +11,8 @@
                    (:print-function (lambda (canvas stream depth)
                                       (declare (ignore depth))
                                       (print-canvas canvas stream))))
-  data)
+  data
+  region-associations)
 
 (defun make-canvas (width height)
   "Make a new canvas of width WIDTH and height HEIGHT."
@@ -33,6 +34,21 @@
         new-data))
 
 (defsetf canvas-ref canvas-set)
+
+(defun add-association (canvas region &optional object)
+  "Add the region REGION to the canvas CANVAS, associating it with the object OBJECT."
+  (push (cons region object)
+        (canvas-region-associations canvas)))
+
+(defun find-associations (canvas x y)
+  "Find the regions which contain the point (X, Y) along with their associated objects."
+  (loop :for ra :in (canvas-region-associations canvas)
+        :when (in-region-p (car ra) x y)
+          :collect ra))
+
+(defun objects-at-point (canvas x y)
+  "Compute all of the objects at the point (X, Y) in the canvas CANVAS."
+  (mapcar #'cdr (find-associations canvas x y)))
 
 (defun print-canvas (canvas &optional (stream *standard-output*))
   (print-unreadable-object (canvas stream :type t)
@@ -58,4 +74,6 @@
             :do (write-char #\- stream)
             :finally (progn
                        (write-char #\+ stream)
-                       (terpri stream))))))
+                       (terpri stream))))
+    (format stream "with ~D defined region~:p"
+            (length (canvas-region-associations canvas)))))

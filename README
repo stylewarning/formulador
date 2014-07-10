@@ -27,6 +27,7 @@ following boxes
     * frame-box (a box with decorative appeal)
     * script-box (superscripts and subscripts)
     * limits-box (limits for operators)
+    * sqrt-box (Nth roots)
 
 These will be extended and given more options over time.
 
@@ -175,3 +176,77 @@ Superscripts and subscripts:
 |r = | x  + x  + x  |   |
 |    \  1    2    3 /   |
 +-----------------------+
+
+From examples.lisp, we have the Chudnovsky formula:
+
+> (draw *chudnovsky*)
+#<CANVAS 
++------------------------------------------------------------------------+
+|         _______    ∞                                                   |
+|        |      3   ===                                                 k|
+| 1     \|640320    \     (6k)! (545140134k + 13591409)  /       1     \ |
+|--- = -----------   >   ------------------------------- | - --------- | |
+| π        12       /                        3           |          3  | |
+|                   ===            (3k)! (k!)            \    640320   / |
+|                  k = 0                                                 |
++------------------------------------------------------------------------+
+with 54 defined regions>
+
+We can extract parts of a drawn expression and see the associated tree.
+
+> (mapcar #'draw (objects-at-point (draw *chudnovsky*) 67 4))
+(#<CANVAS 
++-+
+|3|
++-+
+with 1 defined region>
+ #<CANVAS 
++-------+
+|      3|
+|640320 |
++-------+
+with 4 defined regions>
+ #<CANVAS 
++---------+
+|    1    |
+|---------|
+|       3 |
+| 640320  |
++---------+
+with 6 defined regions>
+ #<CANVAS 
++-----------+
+|      1    |
+|- ---------|
+|         3 |
+|   640320  |
++-----------+
+with 8 defined regions>
+ #<CANVAS 
++---------------+
+|/       1     \|
+|| - --------- ||
+||          3  ||
+|\    640320   /|
++---------------+
+with 19 defined regions>
+ #<CANVAS 
++----------------+
+|               k|
+|/       1     \ |
+|| - --------- | |
+||          3  | |
+|\    640320   / |
++----------------+
+with 22 defined regions>
+ #<CANVAS 
++------------------------------------------------------------------------+
+|         _______    ∞                                                   |
+|        |      3   ===                                                 k|
+| 1     \|640320    \     (6k)! (545140134k + 13591409)  /       1     \ |
+|--- = -----------   >   ------------------------------- | - --------- | |
+| π        12       /                        3           |          3  | |
+|                   ===            (3k)! (k!)            \    640320   / |
+|                  k = 0                                                 |
++------------------------------------------------------------------------+
+with 54 defined regions>)

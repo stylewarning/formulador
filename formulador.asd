@@ -18,6 +18,7 @@
   :serial t
   :components ((:file "package")
                (:file "utilities")
+               (:file "region")
                (:file "canvas")
                (:file "charmap")
                (:file "boxes")

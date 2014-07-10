@@ -23,6 +23,18 @@
 
 (defgeneric blit (canvas object x y))
 
+(defvar *record-regions* t
+  "A configuration variable to decide whether regions should be recorded as they are blit to a canvas.")
+
+(defmethod blit :before (canvas (object t) x y)
+  (when *record-regions*
+    (add-association canvas
+                     (make-region-by-dimensions x
+                                                y
+                                                (width object)
+                                                (height object))
+                     object)))
+
 (defmethod blit (canvas (box empty-box) x y)
   (declare (ignore canvas box x y))
   ;; do nothing
