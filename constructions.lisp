@@ -20,6 +20,8 @@
                       +center-dot+
                       +center-dot+))
 
+(defvar +partial+ (code-char #x2202))
+
 (defvar +sigma+
   (picture-box '("==="
                  "\\"
@@ -28,3 +30,21 @@
                  "===")
                :baseline 2)
   "The capital sigma symbol used for summation.")
+
+(defvar +integral+
+  (picture-box '("/"
+                 "|"
+                 "|"
+                 "|"
+                 "/")
+               :baseline 2)
+  "A standard integral symbol.")
+
+(defvar +double-integral+
+  (glue +integral+ +integral+)
+  "A double integral symbol.")
+
+(defvar +triple-integral+
+  (glue +integral+ +integral+ +integral+)
+  "A triple integral symbol.")
+

@@ -24,17 +24,26 @@
 
 
 (defparameter *chudnovsky*
-  (tape
-   (frac-box "1" "π")
-   "="
-   (frac-box (sqrt-box (pow "640320" "3"))
-             "12")
-   (limits-box +sigma+
-               :above "∞"
-               :below "k = 0")
-   (frac-box (tape "(6k)!" "(545140134k + 13591409)")
-             (tape "(3k)!" (pow "(k!)" "3")))
-   (pow (parens-box
-         (tape "-" (frac-box "1"
-                             (pow "640320" "3"))))
-        "k")))
+  (let ((pi-letter (code-char #x3C0)))
+    (tape
+     (frac-box "1" pi-letter)
+     "="
+     (frac-box (sqrt-box (pow "640320" "3"))
+               "12")
+     (limits-box +sigma+
+                 :above "∞"
+                 :below "k = 0")
+     (frac-box (tape "(6k)!" "(545140134k + 13591409)")
+               (tape "(3k)!" (pow "(k!)" "3")))
+     (pow (parens-box
+           (tape "-" (frac-box "1"
+                               (pow "640320" "3"))))
+          "k"))))
+
+(defparameter *gauss-law*
+  (let ((rho (code-char #x03C1))
+        (S "S")
+        (dS (glue +partial+ "S")))
+    (tape (limits-box +triple-integral+ :below S) rho "dV"
+          "="
+          (limits-box +double-integral+ :below dS) (glue "E" +center-dot+ "dA"))))
