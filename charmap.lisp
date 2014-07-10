@@ -49,6 +49,32 @@
    :middle-close #\|
    :bottom-close #\/))
 
+(defvar *ascii-absolute-value-charmap*
+  (make-paren-charmap
+   :small-open #\|
+   :small-close #\|
+   
+   :top-open #\|
+   :middle-open #\|
+   :bottom-open #\|
+   
+   :top-close #\|
+   :middle-close #\|
+   :bottom-close #\|))
+
+(defvar *unicode-absolute-value-charmap*
+  (make-paren-charmap
+   :small-open #\|
+   :small-close #\|
+   
+   :top-open +box-drawings-light-vertical+
+   :middle-open +box-drawings-light-vertical+
+   :bottom-open +box-drawings-light-vertical+
+   
+   :top-close +box-drawings-light-vertical+
+   :middle-close +box-drawings-light-vertical+
+   :bottom-close +box-drawings-light-vertical+))
+
 (defvar *unicode-paren-charmap*
   (make-paren-charmap
    :small-open #\(
