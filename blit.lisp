@@ -277,3 +277,36 @@
             (+ y
                (height (limits-box-above box))
                (height (limits-box-base box)))))))
+
+;;;   ___
+;;;  | 1
+;;; 3|---
+;;; \| 2
+(defmethod blit (canvas (box sqrt-box) x y)
+  (let ((height (height box))
+        (shift (max 0 (1- (width (sqrt-box-power box))))))
+    ;; radical
+    (setf (canvas-ref canvas
+                      (+ shift x)
+                      (1- (+ y height)))
+          #\\)
+    (paint-vertical-line canvas
+                         (+ 1 shift x)
+                         (1+ y)
+                         (1- (+ y height)))
+    (blit canvas
+          (sqrt-box-power box)
+          x
+          (- (+ y height) 2))
+    ;; vinculum
+    (paint-horizontal-line canvas
+                           y
+                           (+ 2 shift x)
+                           (1- (+ x (width box)))
+                           :char #\_)
+    
+    ;; argument
+    (blit canvas
+          (sqrt-box-contents box)
+          (+ 2 shift x)
+          (1+ y))))
