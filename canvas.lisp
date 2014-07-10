@@ -35,25 +35,27 @@
 (defsetf canvas-ref canvas-set)
 
 (defun print-canvas (canvas &optional (stream *standard-output*))
-  (destructuring-bind (width height)
-      (canvas-dimensions canvas)
-    (loop :initially (write-char #\+ stream) 
-          :repeat width
-          :do (write-char #\- stream)
-          :finally (progn
-                     (write-char #\+ stream)
-                     (terpri stream)))
-    
-    (dotimes (y height)
-      (write-char #\| stream)
-      (dotimes (x width)
-        (write-char (canvas-ref canvas x y) stream))
-      (write-char #\| stream)
-      (terpri stream))
-    
-    (loop :initially (write-char #\+ stream) 
-          :repeat width
-          :do (write-char #\- stream)
-          :finally (progn
-                     (write-char #\+ stream)
-                     (terpri stream)))))
+  (print-unreadable-object (canvas stream :type t)
+    (terpri stream)
+    (destructuring-bind (width height)
+        (canvas-dimensions canvas)
+      (loop :initially (write-char #\+ stream) 
+            :repeat width
+            :do (write-char #\- stream)
+            :finally (progn
+                       (write-char #\+ stream)
+                       (terpri stream)))
+      
+      (dotimes (y height)
+        (write-char #\| stream)
+        (dotimes (x width)
+          (write-char (canvas-ref canvas x y) stream))
+        (write-char #\| stream)
+        (terpri stream))
+      
+      (loop :initially (write-char #\+ stream) 
+            :repeat width
+            :do (write-char #\- stream)
+            :finally (progn
+                       (write-char #\+ stream)
+                       (terpri stream))))))
