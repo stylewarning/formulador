@@ -14,6 +14,12 @@
   "Tape together (horizontally) all of ITEMS."
   (row-box items :padding 1))
 
+(defconstant +center-dot+ (code-char #xB7))
+
+(defvar +cdots+ (glue +center-dot+
+                      +center-dot+
+                      +center-dot+))
+
 (defvar +sigma+
   (picture-box '("==="
                  "\\"
