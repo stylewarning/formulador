@@ -3,13 +3,13 @@
 ;;;; Copyright (c) 2011-2014 Robert Smith
 
 (defpackage #:formulador-asd
-  (:use :cl :asdf))
+  (:use #:cl))
 
-(in-package :formulador-asd)
+(in-package #:formulador-asd)
 
-(defsystem formulador
+(asdf:defsystem #:formulador
   :name "formulador"
-  :version "0.0.2"
+  :version "0.0.3"
   :maintainer "Robert Smith"
   :author "Robert Smith <quad@symbo1ics.com>"
   :license "BSD 3-clause (see LICENSE)"
