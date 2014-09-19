@@ -38,10 +38,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (box (:constructor %make-box))
-  cached-width
-  cached-height
-  cached-baseline)
+(defclass box ()
+  ((cached-width :initform nil
+                 :initarg :cached-width
+                 :accessor box-cached-width)
+   (cached-height :initform nil
+                  :initarg :cached-height
+                  :accessor box-cached-height)
+   (cached-baseline :initform nil
+                    :initarg :cached-baseline
+                    :accessor box-cached-baseline)))
 
 (defmethod width :around ((box box))
   (or (box-cached-width box)
@@ -60,11 +66,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; The Empty Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (empty-box (:include box)
-                      (:constructor %empty-box)))
+(defclass empty-box (box)
+  ())
 
-(let ((box (%empty-box :cached-width 0
-                       :cached-height 0)))
+(let ((box (make-instance 'empty-box :cached-width 0
+                                     :cached-height 0
+                                     :cached-baseline 0)))
   (defun empty-box ()
     box))
 
@@ -77,7 +84,7 @@
 (defmethod baseline ((box empty-box))
   0)
 
-;;; Should we make NIL an empty box?
+;;; TODO: Should we make NIL an empty box?
 
 #+#:ignore
 (progn
@@ -92,9 +99,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Glass Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (glass-box (:include box)
-                      (:constructor glass-box (contents)))
-  contents)
+(defclass glass-box (box)
+  ((contents :initarg :contents
+             :accessor glass-box-contents)))
+
+(defun glass-box (contents)
+  (make-instance 'glass-box :contents contents))
 
 (defmethod width ((box glass-box))
   (width (glass-box-contents box)))
@@ -108,9 +118,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Phantom Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (phantom-box (:include box)
-                        (:constructor phantom-box (contents)))
-  contents)
+(defclass phantom-box (box)
+  ((contents :initarg :contents
+             :accessor phantom-box-contents)))
+
+(defun phantom-box (contents)
+  (make-instance 'phantom-box :contents contents))
 
 (defmethod width ((box phantom-box))
   (width (phantom-box-contents box)))
@@ -145,9 +158,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; String Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (string-box (:include box)
-                       (:constructor string-box (string)))
-  string)
+(defclass string-box (box)
+  ((string :initarg :string
+           :accessor string-box-string)))
+
+(defun string-box (string)
+  (make-instance 'string-box :string string))
 
 (defmethod width ((box string-box))
   (length (string-box-string box)))
@@ -166,10 +182,15 @@
 (defvar *frac-box-vinculum-padding* 1
   "The amount by which to stretch each side of the vinculum.")
 
-(defstruct (frac-box (:include box)
-                     (:constructor frac-box (numerator denominator)))
-  numerator
-  denominator)
+(defclass frac-box (box)
+  ((numerator :initarg :numerator
+              :accessor frac-box-numerator)
+   (denominator :initarg :denominator
+                :accessor frac-box-denominator)))
+
+(defun frac-box (numerator denominator)
+  (make-instance 'frac-box :numerator numerator
+                           :denominator denominator))
 
 (defmethod width ((box frac-box))
   (+ (* 2 *frac-box-vinculum-padding*)
@@ -186,9 +207,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frame Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (frame-box (:include box)
-                      (:constructor frame-box (contents)))
-  contents)
+(defclass frame-box (box)
+  ((contents :initarg :contents
+             :accessor frame-box-contents)))
+
+(defun frame-box (contents)
+  (make-instance 'frame-box :contents contents))
 
 (defmethod width ((box frame-box))
   (+ 2
@@ -203,14 +227,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Row Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (row-box (:include box)
-                    (:constructor %row-box))
-  (padding 0 :type (integer 0))
-  contents)
+(defclass row-box (box)
+  ((padding :initarg :padding
+            :type (integer 0)
+            :accessor row-box-padding)
+   (contents :initarg :contents
+             :accessor row-box-contents)))
 
 (defun row-box (boxes &key (padding 0))
-  (%row-box :padding padding
-            :contents boxes))
+  (make-instance 'row-box :padding padding
+                          :contents boxes))
 
 (defmethod width ((box row-box))
   ;; include padding?
@@ -233,10 +259,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Picture Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (picture-box (:include box)
-                        (:constructor picture-box (picture &key baseline)))
-  picture
-  (baseline 0))
+(defclass picture-box (box)
+  ((picture :initarg :picture
+            :accessor picture-box-picture)
+   (baseline :initarg :baseline
+             :accessor picture-box-baseline)))
+
+(defun picture-box (picture &key baseline)
+  (make-instance 'picture-box :picture picture
+                              :baseline baseline))
 
 (defmethod width ((box picture-box))
   (maximum (picture-box-picture box)
@@ -250,9 +281,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (parens-box (:include box)
-                       (:constructor parens-box (contents)))
-  contents)
+(defclass parens-box (box)
+  ((contents :initarg :contents
+             :accessor parens-box-contents)))
+
+(defun parens-box (contents)
+  (make-instance 'parens-box :contents contents))
 
 (defmethod width ((box parens-box))
   (let ((w (width (parens-box-contents box)))
@@ -272,16 +306,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Script Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (script-box (:include box)
-                       (:constructor script-box (base &key superscript subscript)))
-  base
-  (superscript (empty-box))
-  (subscript (empty-box))
-  ;; presuperscript
-  ;; presubscript
-  ;; over
-  ;; under
-  )
+(defclass script-box (box)
+  ((base :initarg :base
+         :accessor script-box-base)
+   (superscript :initarg :superscript
+                :accessor script-box-superscript)
+   (subscript :initarg :subscript
+              :accessor script-box-subscript)
+   ;; presuperscript
+   ;; presubscript
+   ;; over
+   ;; under
+   ))
+(defun script-box (base &key (superscript (empty-box)) 
+                             (subscript (empty-box)))
+  (make-instance 'script-box :base base
+                             :superscript superscript
+                             :subscript subscript))
 
 (defmethod width ((box script-box))
   (+ (width (script-box-base box))
@@ -300,11 +341,19 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Limits Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (limits-box (:include box)
-                       (:constructor limits-box (base &key above below)))
-  base
-  (above (empty-box))
-  (below (empty-box)))
+(defclass limits-box (box)
+  ((base :initarg :base
+         :accessor limits-box-base)
+   (above :initarg :above
+          :accessor limits-box-above)
+   (below :initarg :below
+          :accessor limits-box-below)))
+
+(defun limits-box (base &key (above (empty-box))
+                             (below (empty-box)))
+  (make-instance 'limits-box :base base
+                             :above above
+                             :below below))
 
 (defmethod width ((box limits-box))
   (max (width (limits-box-base box))
@@ -323,18 +372,19 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Square Root Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct (sqrt-box (:include box)
-                     (:constructor %sqrt-box))
-  contents
-  (power (empty-box)))
+(defclass sqrt-box (box)
+  ((contents :initarg :contents
+             :accessor sqrt-box-contents)
+   (power :initarg :power
+          :accessor sqrt-box-power)))
 
 (defun sqrt-box (contents &key (power (empty-box)))
   (assert (or (zerop (height power))
               (= 1 (height power)))
           (power)
           "The POWER of a SQRT-BOX must have a height of 0 or 1.")
-  (%sqrt-box :contents contents
-             :power power))
+  (make-instance 'sqrt-box :contents contents
+                           :power power))
 
 (defmethod width ((box sqrt-box))
   (+ 2
@@ -350,5 +400,4 @@
 
 ;;;;;;;;;
 ;;; column-box
-
 
