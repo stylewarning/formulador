@@ -28,7 +28,8 @@
    #:*frac-box-vinculum-padding*
    #:frame-box
    #:row-box
-   #:picture-box)
+   #:picture-box
+   #:limits-box)
   
   ;; blit.lisp
   ;; Do we really want to export this junk?
@@ -43,6 +44,12 @@
   (:export
    #:glue
    #:tape
-   #:+sigma+)
+   #:+center-dot+
+   #:+cdots+
+   #:+partial+
+   #:+sigma+
+   #:+integral+
+   #:+double-integral+
+   #:+triple-integral+)
   
   (:documentation "Formula renderering package."))
