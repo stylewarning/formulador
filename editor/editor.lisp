@@ -60,7 +60,10 @@
                   :do (charms:mvwaddch window y x (logior c charms:A_STANDOUT)))))
 
 (defun start-editor ()
+  ;; Clear any output that hasn't been written.
   (force-output *terminal-io*)
+  
+  ;; Initialize ncurses.
   (charms:initscr)
   (unwind-protect
        (let ((*editor-initialized* t))
@@ -118,26 +121,8 @@
                        ((= c charms:ERR) nil)
                        (t (return-from driver-loop)))
                      
-                     #+ignore
-                     (with-restored-cursor charms:*stdscr*
-                       (multiple-value-bind (cursor-x cursor-y)
-                           (cursor-position charms:*stdscr*)
-                         (let ((regions (formulador::find-associations *canvas* cursor-x cursor-y)))
-                           (when regions
-                             (highlight-region charms:*stdscr*
-                                               (car
-                                                (elt regions
-                                                     (random (length regions)))))))))
-                     
-                     ;; Refresh
-                     (charms:wrefresh charms:*stdscr*)))
+                     ;; Refresh the screen.
+                     (charms:wrefresh charms:*stdscr*))))
 
-         
-         ;;(move-cursor 0 0)
-         
-         ;;(charms:waddch charms:*stdscr* (char-code #\x))
-         
-         ;; Avoid quitting out.
-         ;;(charms:getch)
-         )
+    ;; Finalize ncurses.
     (charms:endwin)))
