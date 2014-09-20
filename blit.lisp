@@ -19,14 +19,29 @@
         :do (setf (canvas-ref canvas x y)
                   char)))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Blitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defgeneric blit (canvas object x y))
+(defgeneric blit (canvas object x y)
+  (:documentation "Given an object OBJECT, render it on the canvas CANVAS at the coordinates (X,Y)."))
+
+(defvar *force-recording* nil
+  "A configuration variable to force recording of all regions, even in the context of `WITH-RECORDING-OFF'.")
 
 (defvar *record-regions* t
-  "A configuration variable to decide whether regions should be recorded as they are blit to a canvas.")
+  "A special variable to decide whether regions should be recorded as they are blit to a canvas.
 
-(defmethod blit :before (canvas (object t) x y)
+This variable is sometimes used to disable recording for editing purposes.")
+
+(defmacro with-recording-off (&body body)
+  "Disable region recording within the execution of the body BODY."
+  `(let ((*record-regions* *force-recording*))
+     (declare (ignorable *record-regions*))
+     ,@body))
+
+;;; When we encounter a box to blit, record the region in which the
+;;; object is being blitted, and the object itself.
+(defmethod blit :before (canvas (object box) x y)
   (when *record-regions*
     (add-association canvas
                      (make-region-by-dimensions x
@@ -34,6 +49,19 @@
                                                 (width object)
                                                 (height object))
                      object)))
+
+;;; Non-Box Blitting
+
+(defmethod blit (canvas (character character) x y)
+  (setf (canvas-ref canvas x y) character))
+
+(defmethod blit (canvas (string string) x y)
+  (loop :for c :across string
+        :for i :from 0
+        :do (setf (canvas-ref canvas (+ x i) y)
+                  c)))
+
+;;; Box Blitting
 
 (defmethod blit (canvas (box empty-box) x y)
   (declare (ignore canvas box x y))
@@ -51,22 +79,8 @@
   ;; do nothing
   )
 
-
-
-(defmethod blit (canvas (char character) x y)
-  (setf (canvas-ref canvas x y) char))
-
-(defmethod blit (canvas (str string) x y)
-  (loop :for c :across str
-        :for i :from 0
-        :do (setf (canvas-ref canvas (+ x i) y)
-                  c)))
-
 (defmethod blit (canvas (box string-box) x y)
-  (loop :for c :across (string-box-string box)
-        :for i :from 0
-        :do (setf (canvas-ref canvas (+ x i) y)
-                  c)))
+  (blit canvas (string-box-string box) x y))
 
 (defparameter *vinculum-charmap* *ascii-vinculum-charmap*
   "The charmap to use when drawing the vinculum.")

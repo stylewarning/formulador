@@ -36,6 +36,10 @@
   (- (height object)
      (baseline object)))
 
+(defgeneric box (object)
+  (:documentation "A generic function to box up objects conveniently."))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass box ()
@@ -68,6 +72,13 @@
       (setf (box-cached-baseline box)
             (call-next-method box))))
 
+
+;;; Attempting to box up a box just returns the box.
+
+(defmethod box ((object box))
+  object)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; The Empty Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass empty-box (box)
@@ -76,11 +87,15 @@
 
 This class is intended to be a singleton class, and should be accessed with #'EMPTY-BOX."))
 
-(let ((box (make-instance 'empty-box :cached-width 0
-                                     :cached-height 0
-                                     :cached-baseline 0)))
-  (defun empty-box ()
-    box))
+
+(defun empty-box ()
+  "Return an instance of an empty box.
+
+Generally, though not necessarily, the value returned will be EQ in successive calls."
+  (load-time-value (make-instance 'empty-box :cached-width 0
+                                             :cached-height 0
+                                             :cached-baseline 0)
+                   t))
 
 (defmethod width ((box empty-box))
   0)
@@ -91,18 +106,12 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 (defmethod baseline ((box empty-box))
   0)
 
-;;; TODO: Should we make NIL an empty box?
 
-#+#:ignore
-(progn
-  (defmethod width ((box null))
-    0)
+;;; Allow NIL to be boxed.
 
-  (defmethod height ((box null))
-    0)
+(defmethod box ((object null))
+  (empty-box))
 
-  (defmethod baseline ((box null))
-    0))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Glass Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -143,31 +152,6 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 (defmethod baseline ((box phantom-box))
   (baseline (phantom-box-contents box)))
 
-;;;;;;;;;;;;;;;;;;;;;;;; Characters as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Characters are conveniently considered types of boxes.
-
-(defmethod width ((char character))
-  1)
-
-(defmethod height ((char character))
-  1)
-
-(defmethod baseline ((char character))
-  0)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;; Strings as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Strings are conveniently considered types of boxes.
-
-(defmethod width ((str string))
-  (length str))
-
-(defmethod height ((str string))
-  1)
-
-(defmethod baseline ((str string))
-  0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; String Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -190,6 +174,15 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 (defmethod baseline ((box string-box))
   (declare (ignore box))
   0)
+
+
+;;; Allow characters and strings to be boxed.
+
+(defmethod box ((object string))
+  (string-box object))
+
+(defmethod box ((object character))
+  (string-box (string object)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Fraction Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -223,6 +216,7 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 (defmethod baseline ((box frac-box))
   (height (frac-box-denominator box)))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frame Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass frame-box (box)
@@ -244,6 +238,7 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 
 (defmethod baseline ((box frame-box))
   (1+ (baseline (frame-box-contents box))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Row Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -278,6 +273,7 @@ This class is intended to be a singleton class, and should be accessed with #'EM
   (maximum (row-box-contents box)
            :key #'baseline))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Picture Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass picture-box (box)
@@ -301,6 +297,7 @@ This class is intended to be a singleton class, and should be accessed with #'EM
 
 (defmethod baseline ((box picture-box))
   (picture-box-baseline box))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Parens Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
