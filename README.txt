@@ -126,6 +126,7 @@ FORMULADOR> (draw (glue +sigma+
 +----------------------------------+
 with 22 defined regions>
 
+
 If your terminal supports unicode, it can print using unicode by
 setting the appropriate so-called "charmaps". Charmaps are alternative
 character sets for different decorations or constructions.
@@ -167,6 +168,7 @@ FORMULADOR>  (let ((*frame-charmap* *unicode-plain-frame-charmap*)
 +------------------------------------+
 with 23 defined regions>
 
+
 Superscripts and subscripts are supported. Here's the standard Euclidean metric in 3-space:
 
 FORMULADOR> (flet ((x_ (n)
@@ -191,9 +193,10 @@ FORMULADOR> (flet ((x_ (n)
 +-----------------------+
 with 22 defined regions>
 
+
 There are more examples in examples.lisp. One such is Chudnovsky's formula.
 
-> (draw *chudnovsky*)
+FORMULADOR> (draw *chudnovsky*)
 #<CANVAS 
 +------------------------------------------------------------------------+
 |         _______    ∞                                                   |
@@ -204,12 +207,13 @@ There are more examples in examples.lisp. One such is Chudnovsky's formula.
 |                   ===            (3k)! (k!)            \    640320   / |
 |                  k = 0                                                 |
 +------------------------------------------------------------------------+
-with 54 defined regions>
+with 39 defined regions>
+
 
 We can extract parts of a drawn expression and see the associated
 tree. This is useful for editing tasks.
 
-> (mapcar #'draw (objects-at-point (draw *chudnovsky*) 67 4))
+FORMULADOR> (mapcar #'draw (objects-at-point (draw *chudnovsky*) 67 4))
 (#<CANVAS 
 +-+
 |3|
@@ -244,7 +248,7 @@ with 8 defined regions>
 ||          3  ||
 |\    640320   /|
 +---------------+
-with 19 defined regions>
+with 9 defined regions>
  #<CANVAS 
 +----------------+
 |               k|
@@ -253,7 +257,7 @@ with 19 defined regions>
 ||          3  | |
 |\    640320   / |
 +----------------+
-with 22 defined regions>
+with 12 defined regions>
  #<CANVAS 
 +------------------------------------------------------------------------+
 |         _______    ∞                                                   |
@@ -264,4 +268,4 @@ with 22 defined regions>
 |                   ===            (3k)! (k!)            \    640320   / |
 |                  k = 0                                                 |
 +------------------------------------------------------------------------+
-with 54 defined regions>)
+with 39 defined regions>)
