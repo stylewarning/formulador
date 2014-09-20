@@ -41,13 +41,17 @@
 (defclass box ()
   ((cached-width :initform nil
                  :initarg :cached-width
-                 :accessor box-cached-width)
+                 :accessor box-cached-width
+                 :documentation "The cached width of the box.")
    (cached-height :initform nil
                   :initarg :cached-height
-                  :accessor box-cached-height)
+                  :accessor box-cached-height
+                  :documentation "The cached height of the box.")
    (cached-baseline :initform nil
                     :initarg :cached-baseline
-                    :accessor box-cached-baseline)))
+                    :accessor box-cached-baseline
+                    :documentation "The cached baseline of the box."))
+  (:documentation "Abstract class for a box, which can be rendered as a formula. Boxes are the building blocks of formulas."))
 
 (defmethod width :around ((box box))
   (or (box-cached-width box)
@@ -67,7 +71,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; The Empty Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass empty-box (box)
-  ())
+  ()
+  (:documentation "An empty box that doesn't render to anything.
+
+This class is intended to be a singleton class, and should be accessed with #'EMPTY-BOX."))
 
 (let ((box (make-instance 'empty-box :cached-width 0
                                      :cached-height 0
@@ -101,7 +108,8 @@
 
 (defclass glass-box (box)
   ((contents :initarg :contents
-             :accessor glass-box-contents)))
+             :accessor glass-box-contents))
+  (:documentation "A box that simply wraps its contents. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
 
 (defun glass-box (contents)
   (make-instance 'glass-box :contents contents))
@@ -120,7 +128,8 @@
 
 (defclass phantom-box (box)
   ((contents :initarg :contents
-             :accessor phantom-box-contents)))
+             :accessor phantom-box-contents))
+  (:documentation "A box which will render as empty space, of the same dimensions of its contents."))
 
 (defun phantom-box (contents)
   (make-instance 'phantom-box :contents contents))
@@ -136,6 +145,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Characters as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; Characters are conveniently considered types of boxes.
+
 (defmethod width ((char character))
   1)
 
@@ -146,6 +157,8 @@
   0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Strings as boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Strings are conveniently considered types of boxes.
 
 (defmethod width ((str string))
   (length str))
@@ -160,7 +173,9 @@
 
 (defclass string-box (box)
   ((string :initarg :string
-           :accessor string-box-string)))
+           :type string
+           :accessor string-box-string))
+  (:documentation "A box whose content is just a string."))
 
 (defun string-box (string)
   (make-instance 'string-box :string string))
@@ -184,9 +199,12 @@
 
 (defclass frac-box (box)
   ((numerator :initarg :numerator
-              :accessor frac-box-numerator)
+              :accessor frac-box-numerator
+              :documentation "The numerator of a fraction.")
    (denominator :initarg :denominator
-                :accessor frac-box-denominator)))
+                :accessor frac-box-denominator
+                :documentation "The denominator of a fraction."))
+  (:documentation "A box representing a (vertically printed) fraction."))
 
 (defun frac-box (numerator denominator)
   (make-instance 'frac-box :numerator numerator
@@ -209,9 +227,11 @@
 
 (defclass frame-box (box)
   ((contents :initarg :contents
-             :accessor frame-box-contents)))
+             :accessor frame-box-contents))
+  (:documentation "A box decorated with a rectangular frame. This is often used to highlight a particular portion of a formula."))
 
 (defun frame-box (contents)
+  "Construct a `FRAME-BOX' whoe contents are CONTENTS."
   (make-instance 'frame-box :contents contents))
 
 (defmethod width ((box frame-box))
@@ -232,7 +252,8 @@
             :type (integer 0)
             :accessor row-box-padding)
    (contents :initarg :contents
-             :accessor row-box-contents)))
+             :accessor row-box-contents))
+  (:documentation "A horizontal concatenation of boxes."))
 
 (defun row-box (boxes &key (padding 0))
   (make-instance 'row-box :padding padding
@@ -263,9 +284,11 @@
   ((picture :initarg :picture
             :accessor picture-box-picture)
    (baseline :initarg :baseline
-             :accessor picture-box-baseline)))
+             :accessor picture-box-baseline))
+  (:documentation "A box representing a two-dimensional picture (typically composed of text art)."))
 
-(defun picture-box (picture &key baseline)
+(defun picture-box (picture &key (baseline 0))
+  "Construct a `PICTURE-BOX' whose picture is PICTURE at the baseline BASELINE."
   (make-instance 'picture-box :picture picture
                               :baseline baseline))
 
@@ -283,9 +306,11 @@
 
 (defclass parens-box (box)
   ((contents :initarg :contents
-             :accessor parens-box-contents)))
+             :accessor parens-box-contents))
+  (:documentation "Representation of a box which is parenthesized."))
 
 (defun parens-box (contents)
+  "Construct a `PARENS-BOX' whose contents are CONTENTS."
   (make-instance 'parens-box :contents contents))
 
 (defmethod width ((box parens-box))
@@ -317,9 +342,12 @@
    ;; presubscript
    ;; over
    ;; under
-   ))
+   )
+  (:documentation "A box which contains superscripts or subscripts."))
+
 (defun script-box (base &key (superscript (empty-box)) 
                              (subscript (empty-box)))
+  "Construct a `SCRIPT-BOX' whose base is BASE, optionally with a superscript box SUPERSCRIPT and subscript box SUBSCRIPT."
   (make-instance 'script-box :base base
                              :superscript superscript
                              :subscript subscript))
@@ -347,7 +375,8 @@
    (above :initarg :above
           :accessor limits-box-above)
    (below :initarg :below
-          :accessor limits-box-below)))
+          :accessor limits-box-below))
+  (:documentation "A box with \"limit\" decorations above and below it."))
 
 (defun limits-box (base &key (above (empty-box))
                              (below (empty-box)))
@@ -376,9 +405,11 @@
   ((contents :initarg :contents
              :accessor sqrt-box-contents)
    (power :initarg :power
-          :accessor sqrt-box-power)))
+          :accessor sqrt-box-power))
+  (:documentation "Representation of an object whose root is being taken."))
 
 (defun sqrt-box (contents &key (power (empty-box)))
+  "Construct a `SQRT-BOX' of the contents CONTENTS, optionally whose power is POWER."
   (assert (or (zerop (height power))
               (= 1 (height power)))
           (power)
