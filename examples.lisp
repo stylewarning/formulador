@@ -46,7 +46,7 @@
           (box "k")))))
 
 (defparameter *gauss-law*
-  (let ((rho (code-char #x03C1))
+  (let ((rho (box (code-char #x03C1)))
         (S (box "S"))
         (dS (glue +partial+ (box "S"))))
     (tape (limits-box +triple-integral+ :below S) rho (box "dV")
