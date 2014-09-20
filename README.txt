@@ -33,24 +33,27 @@ These will be extended and given more options over time.
 
 Here is a simple example:
 
-> (draw (frac-box "x" "y"))
+FORMULADOR> (draw (frac-box (box "x") (box "y")))
+#<CANVAS 
 +---+
 | x |
 |---|
 | y |
 +---+
+with 3 defined regions>
 
 And a more complex example:
 
-> (draw
-   (frac-box (row-box (list
-                       (frac-box "x" "y")
-                       "+"
-                       (frac-box "w"
-                                 (row-box (list "u" "+" "v") :padding 1)))
-                      :padding 1)
-             (frac-box (row-box (list "p" "+" "q") :padding 1)
-                       (row-box (list "r" "+" (frac-box "1" "s")) :padding 1))))
+FORMULADOR> (draw
+             (frac-box (row-box (list
+                                 (frac-box (box "x") (box "y"))
+                                 (box "+")
+                                 (frac-box (box "w")
+                                           (row-box (list (box "u") (box "+") (box "v")) :padding 1)))
+                                :padding 1)
+                       (frac-box (row-box (list (box "p") (box "+") (box "q")) :padding 1)
+                                 (row-box (list (box "r") (box "+") (frac-box (box "1") (box "s"))) :padding 1))))
+#<CANVAS 
 +---------------+
 |  x       w    |
 | --- + ------- |
@@ -62,51 +65,55 @@ And a more complex example:
 |    r + ---    |
 |         s     |
 +---------------+
+with 23 defined regions>
 
 Demonstration of the use of combinators:
 
-> (defun interleave (x list)
-    (rest (mapcan (lambda (y) (list x y)) list)))
+FORMULADOR> (defun interleave (x list)
+              (rest (mapcan (lambda (y) (list x y)) list)))
 INTERLEAVE
-> (interleave '* '(x y z))
+FORMULADOR> (interleave '* '(x y z))
 (X * Y * Z)
-> (draw
-   (frac-box
-    "1"
-    (row-box (interleave "+" (map 'list
-                                  (lambda (c)
-                                    (frac-box "1" c))
-                                  "rtoyg"))
-             :padding 1)))
-+-----------------------------+
-|              1              |
-|-----------------------------|
-|  1     1     1     1     1  |
-| --- + --- + --- + --- + --- |
-|  r     t     o     y     g  |
-+-----------------------------+
-
-
-Baseline test:
-
-> (draw (glue +sigma+
-              (row-box (list (frac-box (frac-box "x + y" "z")
-                                       "b")
-                             "+"
-                             (parens-box
-                              (row-box
-                               (list (frame-box (frac-box
-                                                 "c"
-                                                 (row-box (list
-                                                           (frac-box "p"
-                                                                     "q")
-                                                           "+"
-                                                           "r")
-                                                          :padding 1)))
-                                     "*" 
-                                     "r")
-                               :padding 1)))
+FORMULADOR> (draw
+             (frac-box
+              (box "1")
+              (row-box (interleave (box "+") (map 'list
+                                                  (lambda (c)
+                                                    (frac-box (box "1") (box c)))
+                                                  "harmonic"))
                        :padding 1)))
+#<CANVAS 
++-----------------------------------------------+
+|                       1                       |
+|-----------------------------------------------|
+|  1     1     1     1     1     1     1     1  |
+| --- + --- + --- + --- + --- + --- + --- + --- |
+|  h     a     r     m     o     n     i     c  |
++-----------------------------------------------+
+with 34 defined regions>
+
+
+Formulador is aware of baselines. Note the correct baselines in the following example.
+
+FORMULADOR> (draw (glue +sigma+
+                        (row-box (list (frac-box (frac-box (box "x + y") (box "z"))
+                                                 (box "b"))
+                                       (box "+")
+                                       (parens-box
+                                        (row-box
+                                         (list (frame-box (frac-box
+                                                           (box "c")
+                                                           (row-box (list
+                                                                     (frac-box (box "p")
+                                                                               (box "q"))
+                                                                     (box "+")
+                                                                     (box "r"))
+                                                                    :padding 1)))
+                                               (box "*")
+                                               (box "r"))
+                                         :padding 1)))
+                                 :padding 1)))
+#<CANVAS 
 +----------------------------------+
 |     x + y                        |
 |=== -------    / +---------+     \|
@@ -117,31 +124,35 @@ Baseline test:
 |               | |  q      |     ||
 |               \ +---------+     /|
 +----------------------------------+
+with 22 defined regions>
 
-Now with Unicode...
+If your terminal supports unicode, it can print using unicode by
+setting the appropriate so-called "charmaps". Charmaps are alternative
+character sets for different decorations or constructions.
 
-> (let ((*frame-charmap* *unicode-plain-frame-charmap*)
-        (*vinculum-charmap* *unicode-vinculum-charmap*)
-        (*paren-charmap* *unicode-paren-charmap*))
-    (draw (glue +sigma+
-                (row-box (list (frac-box (frac-box "x + y" "z")
-                                         "b")
-                               "+"
-                               (parens-box
-                                (row-box
-                                 (list (frame-box (frac-box
-                                                   "c"
-                                                   (row-box (list
-                                                             (frame-box
-                                                              (frac-box "p"
-                                                                        "q"))
-                                                             "+"
-                                                             "r")
-                                                            :padding 1)))
-                                       "*" 
-                                       "r")
-                                 :padding 1)))
-                         :padding 1))))
+FORMULADOR>  (let ((*frame-charmap* *unicode-plain-frame-charmap*)
+                   (*vinculum-charmap* *unicode-vinculum-charmap*)
+                   (*paren-charmap* *unicode-paren-charmap*))
+               (draw (glue +sigma+
+                           (row-box (list (frac-box (frac-box (box "x + y") (box "z"))
+                                                    (box "b"))
+                                          (box "+")
+                                          (parens-box
+                                           (row-box
+                                            (list (frame-box (frac-box
+                                                              (box "c")
+                                                              (row-box (list
+                                                                        (frame-box
+                                                                         (frac-box (box "p")
+                                                                                   (box "q")))
+                                                                        (box "+")
+                                                                        (box "r"))
+                                                                       :padding 1)))
+                                                  (box "*")
+                                                  (box "r"))
+                                            :padding 1)))
+                                    :padding 1))))
+#<CANVAS 
 +------------------------------------+
 |     x + y                          |
 |=== ───────    ⎛ ┌───────────┐     ⎞|
@@ -154,30 +165,33 @@ Now with Unicode...
 |               ⎜ │ └───┘     │     ⎟|
 |               ⎝ └───────────┘     ⎠|
 +------------------------------------+
+with 23 defined regions>
 
-Superscripts and subscripts:
+Superscripts and subscripts are supported. Here's the standard Euclidean metric in 3-space:
 
-> (flet ((x_ (n)
-           (script-box "x"
-                       :superscript "2"
-                       :subscript (prin1-to-string n))))
-    (draw
-     (glue "r"
-           " = "
-           (script-box (parens-box (glue (x_ 1)
-                                         " + "
-                                         (x_ 2)
-                                         " + "
-                                         (x_ 3)))
-                       :superscript "1/2"))))
+FORMULADOR> (flet ((x_ (n)
+                     (script-box (box "x")
+                                 :superscript (box "2")
+                                 :subscript (box (prin1-to-string n)))))
+              (draw
+               (glue (box "r")
+                     (box " = ")
+                     (script-box (parens-box (glue (x_ 1)
+                                                   (box " + ")
+                                                   (x_ 2)
+                                                   (box " + ")
+                                                   (x_ 3)))
+                                 :superscript (box "1/2")))))
+#<CANVAS 
 +-----------------------+
 |                    1/2|
 |    /  2    2    2 \   |
 |r = | x  + x  + x  |   |
 |    \  1    2    3 /   |
 +-----------------------+
+with 22 defined regions>
 
-From examples.lisp, we have the Chudnovsky formula:
+There are more examples in examples.lisp. One such is Chudnovsky's formula.
 
 > (draw *chudnovsky*)
 #<CANVAS 
@@ -192,7 +206,8 @@ From examples.lisp, we have the Chudnovsky formula:
 +------------------------------------------------------------------------+
 with 54 defined regions>
 
-We can extract parts of a drawn expression and see the associated tree.
+We can extract parts of a drawn expression and see the associated
+tree. This is useful for editing tasks.
 
 > (mapcar #'draw (objects-at-point (draw *chudnovsky*) 67 4))
 (#<CANVAS 
