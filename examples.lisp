@@ -59,11 +59,12 @@
   (flet ((tilde (box) (limits-box box :above (box #\~))))
     (let ((phi (box (code-char #x3D5)))
           (theta (box (code-char #x398)))
+          (ell (box (code-char #x2113)))
           (congruent (box (code-char #x2245))))
       (tape
        (glue (script-box (tilde (box #\N))
                          :subscript (script-box phi
-                                                :subscript (box #\l)
+                                                :subscript ell
                                                 :superscript (box "G/E")))
              (pow theta (box #\k))
              (parens-box (glue (script-box (box #\I)
@@ -79,8 +80,19 @@
         (parens-box (glue (script-box (box #\I)
                                       :subscript (glue (pow (parens-box
                                                              (script-box phi
-                                                                         :subscript (box #\l)
+                                                                         :subscript ell
                                                                          :superscript (box #\E)))
                                                             (box #\*))
                                                        (box #\G)))
                           (parens-box (box #\0)))))))))
+
+(defun subscript-test (n)
+  (assert (and (integerp n)
+               (not (minusp n))))
+  (labels ((frob (n)
+             (if (zerop n)
+                 (box "*")
+                 (let ((next (frob (1- n))))
+                   (script-box next :superscript next
+                                    :subscript next)))))
+    (frob n)))
