@@ -17,5 +17,4 @@
   :components ((:module "editor"
                 :serial t
                 :components ((:file "package")
-                             (:file "ncurses")
                              (:file "editor")))))
