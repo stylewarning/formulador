@@ -54,3 +54,33 @@
           (limits-box +double-integral+ :below dS) (glue (box "E")
                                                          +center-dot+
                                                          (box "dA")))))
+
+(defparameter *thermo*
+  (flet ((tilde (box) (limits-box box :above (box #\~))))
+    (let ((phi (box (code-char #x3D5)))
+          (theta (box (code-char #x398)))
+          (congruent (box (code-char #x2245))))
+      (tape
+       (glue (script-box (tilde (box #\N))
+                         :subscript (script-box phi
+                                                :subscript (box #\l)
+                                                :superscript (box "G/E")))
+             (pow theta (box #\k))
+             (parens-box (glue (script-box (box #\I)
+                                           :subscript (glue (pow (box #\i)
+                                                                 (box #\*))
+                                                            (box #\G)))
+                               (parens-box (box #\0)))))
+       
+       congruent
+       
+       (glue
+        (pow theta (box #\k))
+        (parens-box (glue (script-box (box #\I)
+                                      :subscript (glue (pow (parens-box
+                                                             (script-box phi
+                                                                         :subscript (box #\l)
+                                                                         :superscript (box #\E)))
+                                                            (box #\*))
+                                                       (box #\G)))
+                          (parens-box (box #\0)))))))))

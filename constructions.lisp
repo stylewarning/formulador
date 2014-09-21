@@ -14,37 +14,41 @@
   "Tape together (horizontally) all of ITEMS."
   (row-box items :padding 1))
 
-(defvar +center-dot+ (box (code-char #xB7)))
+(defvar +center-dot+ (freeze (box (code-char #xB7))))
 
-(defvar +cdots+ (glue +center-dot+
-                      +center-dot+
-                      +center-dot+))
+(defvar +cdots+ (freeze (glue +center-dot+
+                              +center-dot+
+                              +center-dot+)))
 
-(defvar +partial+ (box (code-char #x2202)))
+(defvar +partial+ (freeze (box (code-char #x2202))))
 
 (defvar +sigma+
-  (picture-box '("==="
-                 "\\"
-                 " >"
-                 "/"
-                 "===")
-               :baseline 2)
+  (freeze
+   (picture-box '("==="
+                  "\\"
+                  " >"
+                  "/"
+                  "===")
+                :baseline 2))
   "The capital sigma symbol used for summation.")
 
 (defvar +integral+
-  (picture-box '("/"
-                 "|"
-                 "|"
-                 "|"
-                 "/")
-               :baseline 2)
+  (freeze
+   (picture-box '("/"
+                  "|"
+                  "|"
+                  "|"
+                  "/")
+                :baseline 2))
   "A standard integral symbol.")
 
 (defvar +double-integral+
-  (glue +integral+ +integral+)
+  (freeze
+   (glue +integral+ +integral+))
   "A double integral symbol.")
 
 (defvar +triple-integral+
-  (glue +integral+ +integral+ +integral+)
+  (freeze
+   (glue +integral+ +integral+ +integral+))
   "A triple integral symbol.")
 

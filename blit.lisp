@@ -68,11 +68,21 @@ This variable is sometimes used to disable recording for editing purposes.")
   ;; do nothing
   )
 
+
+;;; Glass and Frozen Boxes 
+
 (defmethod blit (canvas (box glass-box) x y)
   (blit canvas
         (glass-box-contents box)
         x
         y))
+
+(defmethod blit (canvas (box frozen-box) x y)
+  (with-recording-off
+    (blit canvas
+          (frozen-box-contents box)
+          x
+          y)))
 
 (defmethod blit (canvas (box phantom-box) x y)
   (declare (ignore canvas box x y))
@@ -214,9 +224,9 @@ This variable is sometimes used to disable recording for editing purposes.")
   (let* ((contents (parens-box-contents box))
          (h (height box)))
     (if (= h 1)
-        (blit canvas (glue (paren-charmap-small-open *paren-charmap*)
+        (blit canvas (glue (box (paren-charmap-small-open *paren-charmap*))
                            contents
-                           (paren-charmap-small-close *paren-charmap*))
+                           (box (paren-charmap-small-close *paren-charmap*)))
               x y)
         (progn
           ;; Blit the contents within the parentheses.
