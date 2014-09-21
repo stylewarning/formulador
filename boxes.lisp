@@ -118,7 +118,7 @@ Generally, though not necessarily, the value returned will be EQ in successive c
 (defclass glass-box (box)
   ((contents :initarg :contents
              :accessor glass-box-contents))
-  (:documentation "A box that simply wraps its contents. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
+  (:documentation "A box that simply wraps its contents. An identity box. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
 
 (defun glass-box (contents)
   (make-instance 'glass-box :contents contents))
@@ -131,6 +131,27 @@ Generally, though not necessarily, the value returned will be EQ in successive c
 
 (defmethod baseline ((box glass-box))
   (baseline (glass-box-contents box)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frozen Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; XXX: Should we instead subclass `GLASS-BOX'?
+(defclass frozen-box (box)
+  ((contents :initarg :contents
+             :accessor frozen-box-contents))
+  (:documentation "A box that simply wraps its contents like `GLASS-BOX'. However, it is different from `GLASS-BOX' in that this box exists so that a single conceptual box (composed of several sub-boxes) can be treated as just a single opaque (\"frozen\") box."))
+
+(defun freeze (contents)
+  (make-instance 'frozen-box :contents contents))
+
+(defmethod width ((box frozen-box))
+  (width (frozen-box-contents box)))
+
+(defmethod height ((box frozen-box))
+  (height (frozen-box-contents box)))
+
+(defmethod baseline ((box frozen-box))
+  (baseline (frozen-box-contents box)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Phantom Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -426,6 +447,7 @@ Generally, though not necessarily, the value returned will be EQ in successive c
   (baseline (sqrt-box-contents box)))
 
 
-;;;;;;;;;
-;;; column-box
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; TODO: COLUMN-BOX
 

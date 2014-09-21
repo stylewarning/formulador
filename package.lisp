@@ -17,22 +17,29 @@
 
   ;; boxes.lisp
   (:export
-   #:width                              ; export?
-   #:height                             ; export?
-   #:baseline                           ; export?
+   #:width
+   #:height
+   #:baseline
    
-   #:box                                ; export predicates?
+   #:box                                ; CLASS, GENERIC, METHODS
    #:empty-box
+   #:glass-box
+   #:frozen-box
+   #:freeze                             ; FUNCTION
+   #:phantom-box
    #:string-box
    #:frac-box
    #:*frac-box-vinculum-padding*
    #:frame-box
    #:row-box
    #:picture-box
-   #:limits-box)
+   #:limits-box
+   #:sqrt-box
+   #:script-box
+   #:parens-box)
   
   ;; blit.lisp
-  ;; Do we really want to export this junk?
+  ;; XXX: Do we really want to export this junk?
   (:export
    #:blit)
   
