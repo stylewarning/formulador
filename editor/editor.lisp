@@ -53,27 +53,27 @@
   (and (graphic-char-p char)
        (<= 0 (char-code char) 127)))
 
-(defun render-formula (scr x0 y0)
+(defun render-formula (window x0 y0)
   (let ((width (formulador:width *formula*))
         (height (formulador:height *formula*))
         (canvas (formulador:draw *formula*)))
     (dotimes (y height)
       (dotimes (x width)
         (let ((char (canvas-ref canvas x y)))
-          (charms/ll:mvwaddch scr
-                              (+ y y0)
-                              (+ x x0)
-                              (char-code (if (printablep char)
-                                             char
-                                             #\?))))))))
+          (charms:write-char-at-point window
+                                      (if (printablep char)
+                                          char
+                                          #\?)
+                                      (+ x x0)
+                                      (+ y y0)))))))
 
 (defun highlight-region (window region)
   (loop :for y :from (formulador::region-min-y region)
           :below (formulador::region-max-y region)
         :do (loop :for x :from (formulador::region-min-x region)
                     :below (formulador::region-max-x region)
-                  :for c := (charms/ll:mvwinch window y x)
-                  :do (charms/ll:mvwaddch window y x (logior c charms/ll:A_STANDOUT)))))
+                  :for c := (charms:char-at-point window x y)
+                  :do (charms/ll:mvwaddch (charms::window-pointer window) y x (logior (char-code c) charms/ll:A_STANDOUT)))))
 
 (defun start-editor ()
   ;; Initialize ncurses.
@@ -86,8 +86,8 @@
       ;; Do not buffer.
       (charms:enable-raw-input :interpret-control-characters t)
       
-      ;; Disable blocking.
-      (charms/ll:nodelay charms/ll:*stdscr* charms/ll:TRUE)
+      ;; Enable non-blocking.
+      (charms:enable-non-blocking-mode charms:*standard-window*)
       
       ;; Enable function keys, arrow keys, etc.
       (charms:enable-extra-keys charms:*standard-window*)
@@ -96,7 +96,7 @@
       (loop :named driver-loop
             :with regions := (formulador::find-associations *canvas* 0 0)
             :with level := 0
-            :for c := (charms/ll:wgetch charms/ll:*stdscr*)
+            :for c := (charms:get-char charms:*standard-window* :ignore-error t)
             :do (labels ((cursor-moved ()
                            (multiple-value-bind (cursor-x cursor-y)
                                (charms:cursor-position charms:*standard-window*)
@@ -109,29 +109,28 @@
                            (setf level (mod (1+ level) (length regions))))
                          (highlight-level ()
                            (when regions
-                             (highlight-region charms/ll:*stdscr*
+                             (highlight-region charms:*standard-window*
                                                (car (elt regions level))))))
                   (charms:with-restored-cursor charms:*standard-window*
-                    (render-formula (charms::window-pointer
-                                     charms:*standard-window*) 0 0)
+                    (render-formula charms:*standard-window* 0 0)
                     (highlight-level))                     
                   
                   (cond
-                    ((= c (char-code #\/))
+                    ((null c) nil)
+                    ((char= c #\/)
                      (descend))
-                    ((= c charms/ll:KEY_UP)
+                    ((char= c (code-char charms/ll:KEY_UP))
                      (charms:move-cursor-up charms:*standard-window*)
                      (cursor-moved))
-                    ((= c charms/ll:KEY_DOWN)
+                    ((char= c (code-char charms/ll:KEY_DOWN))
                      (charms:move-cursor-down charms:*standard-window*)
                      (cursor-moved))
-                    ((= c charms/ll:KEY_LEFT)
+                    ((char= c (code-char charms/ll:KEY_LEFT))
                      (charms:move-cursor-left charms:*standard-window*)
                      (cursor-moved))
-                    ((= c charms/ll:KEY_RIGHT)
+                    ((char= c (code-char charms/ll:KEY_RIGHT))
                      (charms:move-cursor-right charms:*standard-window*)
                      (cursor-moved))
-                    ((= c charms/ll:ERR) nil)
                     (t (return-from driver-loop)))
                   
                   ;; Refresh the screen.
