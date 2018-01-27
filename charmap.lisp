@@ -27,11 +27,11 @@
 (defstruct paren-charmap
   small-open
   small-close
-  
+
   top-open
   middle-open
   bottom-open
-  
+
   top-close
   middle-close
   bottom-close)
@@ -40,11 +40,11 @@
   (make-paren-charmap
    :small-open #\(
    :small-close #\)
-   
+
    :top-open #\/
    :middle-open #\|
    :bottom-open #\\
-   
+
    :top-close #\\
    :middle-close #\|
    :bottom-close #\/))
@@ -53,11 +53,11 @@
   (make-paren-charmap
    :small-open #\|
    :small-close #\|
-   
+
    :top-open #\|
    :middle-open #\|
    :bottom-open #\|
-   
+
    :top-close #\|
    :middle-close #\|
    :bottom-close #\|))
@@ -66,11 +66,11 @@
   (make-paren-charmap
    :small-open #\|
    :small-close #\|
-   
+
    :top-open +box-drawings-light-vertical+
    :middle-open +box-drawings-light-vertical+
    :bottom-open +box-drawings-light-vertical+
-   
+
    :top-close +box-drawings-light-vertical+
    :middle-close +box-drawings-light-vertical+
    :bottom-close +box-drawings-light-vertical+))
@@ -79,11 +79,11 @@
   (make-paren-charmap
    :small-open #\(
    :small-close #\)
-   
+
    :top-open (code-char #x239B)
    :middle-open (code-char #x239C)
    :bottom-open (code-char #x239D)
-   
+
    :top-close (code-char #x239E)
    :middle-close (code-char #x239F)
    :bottom-close (code-char #x23A0)))
@@ -92,11 +92,11 @@
   (make-paren-charmap
    :small-open #\[
    :small-close #\]
-   
+
    :top-open (code-char #x23A1)
    :middle-open (code-char #x23A2)
    :bottom-open (code-char #x23A3)
-   
+
    :top-close (code-char #x23A4)
    :middle-close (code-char #x23A5)
    :bottom-close (code-char #x23A6)))
@@ -106,7 +106,7 @@
   top-right-corner
   bottom-left-corner
   bottom-right-corner
-  
+
   left-edge
   right-edge
   top-edge
@@ -118,7 +118,7 @@
    :top-right-corner #\+
    :bottom-left-corner #\+
    :bottom-right-corner #\+
-  
+
    :left-edge #\|
    :right-edge #\|
    :top-edge #\-
@@ -130,19 +130,19 @@
    :top-right-corner #\"
    :bottom-left-corner #\"
    :bottom-right-corner #\"
-  
+
    :left-edge #\"
    :right-edge #\"
    :top-edge #\"
    :bottom-edge #\"))
-   
+
 (defvar *unicode-plain-frame-charmap*
   (make-frame-charmap
    :top-left-corner +box-drawings-light-down-and-right+
    :top-right-corner +box-drawings-light-down-and-left+
    :bottom-left-corner +box-drawings-light-up-and-right+
    :bottom-right-corner +box-drawings-light-up-and-left+
-  
+
    :left-edge +box-drawings-light-vertical+
    :right-edge +box-drawings-light-vertical+
    :top-edge +box-drawings-light-horizontal+
