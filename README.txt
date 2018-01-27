@@ -34,7 +34,7 @@ These will be extended and given more options over time.
 Here is a simple example:
 
 FORMULADOR> (draw (frac-box (box "x") (box "y")))
-#<CANVAS 
+#<CANVAS
 +---+
 | x |
 |---|
@@ -53,7 +53,7 @@ FORMULADOR> (draw
                                 :padding 1)
                        (frac-box (row-box (list (box "p") (box "+") (box "q")) :padding 1)
                                  (row-box (list (box "r") (box "+") (frac-box (box "1") (box "s"))) :padding 1))))
-#<CANVAS 
+#<CANVAS
 +---------------+
 |  x       w    |
 | --- + ------- |
@@ -82,7 +82,7 @@ FORMULADOR> (draw
                                                     (frac-box (box "1") (box c)))
                                                   "harmonic"))
                        :padding 1)))
-#<CANVAS 
+#<CANVAS
 +-----------------------------------------------+
 |                       1                       |
 |-----------------------------------------------|
@@ -113,7 +113,7 @@ FORMULADOR> (draw (glue +sigma+
                                                (box "r"))
                                          :padding 1)))
                                  :padding 1)))
-#<CANVAS 
+#<CANVAS
 +----------------------------------+
 |     x + y                        |
 |=== -------    / +---------+     \|
@@ -153,7 +153,7 @@ FORMULADOR>  (let ((*frame-charmap* *unicode-plain-frame-charmap*)
                                                   (box "r"))
                                             :padding 1)))
                                     :padding 1))))
-#<CANVAS 
+#<CANVAS
 +------------------------------------+
 |     x + y                          |
 |=== ───────    ⎛ ┌───────────┐     ⎞|
@@ -184,7 +184,7 @@ FORMULADOR> (flet ((x_ (n)
                                                    (box " + ")
                                                    (x_ 3)))
                                  :superscript (box "1/2")))))
-#<CANVAS 
+#<CANVAS
 +-----------------------+
 |                    1/2|
 |    /  2    2    2 \   |
@@ -197,7 +197,7 @@ with 22 defined regions>
 There are more examples in examples.lisp. One such is Chudnovsky's formula.
 
 FORMULADOR> (draw *chudnovsky*)
-#<CANVAS 
+#<CANVAS
 +------------------------------------------------------------------------+
 |         _______    ∞                                                   |
 |        |      3   ===                                                 k|
@@ -214,18 +214,18 @@ We can extract parts of a drawn expression and see the associated
 tree. This is useful for editing tasks.
 
 FORMULADOR> (mapcar #'draw (objects-at-point (draw *chudnovsky*) 67 4))
-(#<CANVAS 
+(#<CANVAS
 +-+
 |3|
 +-+
 with 1 defined region>
- #<CANVAS 
+ #<CANVAS
 +-------+
 |      3|
 |640320 |
 +-------+
 with 4 defined regions>
- #<CANVAS 
+ #<CANVAS
 +---------+
 |    1    |
 |---------|
@@ -233,7 +233,7 @@ with 4 defined regions>
 | 640320  |
 +---------+
 with 6 defined regions>
- #<CANVAS 
+ #<CANVAS
 +-----------+
 |      1    |
 |- ---------|
@@ -241,7 +241,7 @@ with 6 defined regions>
 |   640320  |
 +-----------+
 with 8 defined regions>
- #<CANVAS 
+ #<CANVAS
 +---------------+
 |/       1     \|
 || - --------- ||
@@ -249,7 +249,7 @@ with 8 defined regions>
 |\    640320   /|
 +---------------+
 with 9 defined regions>
- #<CANVAS 
+ #<CANVAS
 +----------------+
 |               k|
 |/       1     \ |
@@ -258,7 +258,7 @@ with 9 defined regions>
 |\    640320   / |
 +----------------+
 with 12 defined regions>
- #<CANVAS 
+ #<CANVAS
 +------------------------------------------------------------------------+
 |         _______    ∞                                                   |
 |        |      3   ===                                                 k|
