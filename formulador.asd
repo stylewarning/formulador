@@ -1,20 +1,12 @@
 ;;;; formulador.asd
 ;;;;
-;;;; Copyright (c) 2011-2014 Robert Smith
-
-(defpackage #:formulador-asd
-  (:use #:cl))
-
-(in-package #:formulador-asd)
+;;;; Copyright (c) 2011-2018 Robert Smith
 
 (asdf:defsystem #:formulador
-  :name "formulador"
   :version "0.0.3"
-  :maintainer "Robert Smith"
-  :author "Robert Smith <quad@symbo1ics.com>"
+  :author "Robert Smith <robert@stylewarning.com>"
   :license "BSD 3-clause (see LICENSE)"
-  :description "Formula renderer."
-  :long-description "A mathematical formula pretty printer."
+  :description "A mathematical formula pretty printer."
   :serial t
   :components ((:file "package")
                (:file "utilities")
@@ -24,4 +16,5 @@
                (:file "boxes")
                (:file "blit")
                (:file "render")
-               (:file "constructions")))
+               (:file "constructions")
+               (:file "examples")))

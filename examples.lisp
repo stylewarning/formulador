@@ -1,10 +1,19 @@
 ;;;; examples.lisp
 ;;;;
-;;;; Copyright (c) 2014 Robert Smith
-;;;;
-;;;; This file contains some examples of typeset formulas.
+;;;; Copyright (c) 2014-2018 Robert Smith
 
-(in-package #:formulador)
+;;; This file contains some examples of typeset formulas.
+
+(defpackage #:formulador-examples
+  (:use #:cl #:formulador)
+  (:export #:pow
+           #:*chudnovsky*
+           #:*gauss-law*
+           #:*thermo*
+           #:subscript-test
+           #:draw-all))
+
+(in-package #:formulador-examples)
 
 (defun pow (a b)
   (script-box a :superscript b))
@@ -72,9 +81,9 @@
                                                                  (box #\*))
                                                             (box #\G)))
                                (parens-box (box #\0)))))
-       
+
        congruent
-       
+
        (glue
         (pow theta (box #\k))
         (parens-box (glue (script-box (box #\I)
@@ -96,3 +105,10 @@
                    (script-box next :superscript next
                                     :subscript next)))))
     (frob n)))
+
+(defun draw-all ()
+  (print (draw *chudnovsky*))
+  (print (draw *gauss-law*))
+  (print (draw *thermo*))
+  (print (draw (subscript-test 2)))
+  'done)
