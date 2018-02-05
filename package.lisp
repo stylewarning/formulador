@@ -7,11 +7,14 @@
 
   ;; canvas.lisp
   (:export
-   #:canvas
+   #:canvas                             ; TYPE/STRUCTURE
    #:canvasp
    #:make-canvas
    #:canvas-dimensions
-   #:canvas-ref)
+   #:*error-on-out-of-bounds-write*     ; VARIABLE
+   #:*warn-on-out-of-bounds-write*      ; VARIABLE
+   #:canvas-ref                         ; FUNCTION, SETF
+   )
 
   ;; boxes.lisp
   (:export
