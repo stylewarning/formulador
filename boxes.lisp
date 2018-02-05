@@ -365,8 +365,13 @@ N.B., Successive calls may return the same object."
                 :accessor script-box-superscript)
    (subscript :initarg :subscript
               :accessor script-box-subscript)
+   ;; TODO:
    ;; presuperscript
    ;; presubscript
+
+   ;; XXX: Should we add these? I'm not sure they make sense in a
+   ;; script box. LIMITS-BOX has this functionality.
+   ;;
    ;; over
    ;; under
    )
@@ -454,8 +459,3 @@ N.B., Successive calls may return the same object."
 
 (defmethod baseline ((box sqrt-box))
   (baseline (sqrt-box-contents box)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; TODO: COLUMN-BOX
