@@ -82,16 +82,16 @@
       ;; Do not echo characters immediately. We will do this
       ;; ourselves.
       (charms:disable-echoing)
-      
+
       ;; Do not buffer.
       (charms:enable-raw-input :interpret-control-characters t)
-      
+
       ;; Enable non-blocking.
       (charms:enable-non-blocking-mode charms:*standard-window*)
-      
+
       ;; Enable function keys, arrow keys, etc.
       (charms:enable-extra-keys charms:*standard-window*)
-      
+
       ;; Wait for a character
       (loop :named driver-loop
             :with regions := (formulador::find-associations *canvas* 0 0)
@@ -113,8 +113,8 @@
                                                (car (elt regions level))))))
                   (charms:with-restored-cursor charms:*standard-window*
                     (render-formula charms:*standard-window* 0 0)
-                    (highlight-level))                     
-                  
+                    (highlight-level))
+
                   (cond
                     ((null c) nil)
                     ((char= c #\/)
@@ -135,6 +135,6 @@
                      (charms:move-cursor-right charms:*standard-window*)
                      (cursor-moved))
                     (t (return-from driver-loop)))
-                  
+
                   ;; Refresh the screen.
                   (refresh-editor))))))
