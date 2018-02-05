@@ -36,29 +36,27 @@
 
 (defun canvas-set (canvas x y new-data)
   "Set the character at (X, Y) in the canvas CANVAS to the value NEW-DATA."
-  (destructuring-bind (width height) (canvas-dimensions canvas)
-    (cond
-      ((and (<= 0 x (1- width))
-            (<= 0 y (1- height)))
-       (setf (aref (canvas-data canvas) y x)
-             new-data))
-      (t
-       (cond
-         (*error-on-out-of-bounds-write*
-          (cerror "Ignore write."
-                  "Attempting to write ~S out of bounds at ~
+  (cond
+    ((array-in-bounds-p (canvas-data canvas) y x)
+     (setf (aref (canvas-data canvas) y x)
+           new-data))
+    (t
+     (cond
+       (*error-on-out-of-bounds-write*
+        (cerror "Ignore write."
+                "Attempting to write ~S out of bounds at ~
                   position (~D, ~D) for canvas ~A."
-                  new-data
-                  x
-                  y
-                  canvas))
-         (*warn-on-out-of-bounds-write*
-          (warn "Attempted to write ~S out of bounds at ~
-                 position (~D, ~D) for canvas ~A."
                 new-data
                 x
                 y
-                canvas)))))))
+                canvas))
+       (*warn-on-out-of-bounds-write*
+        (warn "Attempted to write ~S out of bounds at ~
+                 position (~D, ~D) for canvas ~A."
+              new-data
+              x
+              y
+              canvas))))))
 
 (defsetf canvas-ref canvas-set)
 

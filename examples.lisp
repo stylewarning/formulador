@@ -102,11 +102,12 @@
   (assert (and (integerp n)
                (not (minusp n))))
   (labels ((frob (n)
-             (if (zerop n)
-                 (box "*")
-                 (let ((next (frob (1- n))))
-                   (script-box next :superscript next
-                                    :subscript next)))))
+             (parens-box
+              (if (zerop n)
+                  (box "*")
+                  (let ((next (frob (1- n))))
+                    (script-box next :superscript next
+                                     :subscript next))))))
     (frob n)))
 
 (defparameter *tb-22-4-ex1*
