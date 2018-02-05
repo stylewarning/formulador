@@ -363,7 +363,7 @@ Generally, though not necessarily, the value returned will be EQ in successive c
    )
   (:documentation "A box which contains superscripts or subscripts."))
 
-(defun script-box (base &key (superscript (empty-box)) 
+(defun script-box (base &key (superscript (empty-box))
                              (subscript (empty-box)))
   "Construct a `SCRIPT-BOX' whose base is BASE, optionally with a superscript box SUPERSCRIPT and subscript box SUBSCRIPT."
   (make-instance 'script-box :base base
@@ -450,4 +450,3 @@ Generally, though not necessarily, the value returned will be EQ in successive c
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; TODO: COLUMN-BOX
-
