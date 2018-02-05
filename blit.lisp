@@ -73,17 +73,18 @@ This variable is sometimes used to disable recording for editing purposes.")
 
 (defmethod blit (canvas (box glass-box) x y)
   (blit canvas
-        (glass-box-contents box)
+        (contents box)
         x
         y))
 
 (defmethod blit (canvas (box frozen-box) x y)
   (with-recording-off
     (blit canvas
-          (frozen-box-contents box)
+          (contents box)
           x
           y)))
 
+;; Covers PHANTOM-BOX, HPHANTOM-BOX, VPHANTOM-BOX
 (defmethod blit (canvas (box phantom-box) x y)
   (declare (ignore canvas box x y))
   ;; do nothing
@@ -100,10 +101,12 @@ This variable is sometimes used to disable recording for editing purposes.")
          (padding (* 2 *frac-box-vinculum-padding*))
          (num-space (floor (- total-width
                               padding
-                              (width (frac-box-numerator box))) 2))
+                              (width (frac-box-numerator box)))
+                           2))
          (den-space (floor (- total-width
                               padding
-                              (width (frac-box-denominator box))) 2)))
+                              (width (frac-box-denominator box)))
+                           2)))
     (let* ((num-x (+ *frac-box-vinculum-padding*
                      num-space
                      x))
@@ -131,28 +134,28 @@ This variable is sometimes used to disable recording for editing purposes.")
   (paint-vertical-line canvas
                        x
                        (1+ y)
-                       (+ y (height (frame-box-contents box)))
+                       (+ y (height (contents box)))
                        :char (frame-charmap-left-edge *frame-charmap*))
 
   ;; Blit the right side.
   (paint-vertical-line canvas
-                       (+ 1 x (width (frame-box-contents box)))
+                       (+ 1 x (width (contents box)))
                        (1+ y)
-                       (+ y (height (frame-box-contents box)))
+                       (+ y (height (contents box)))
                        :char (frame-charmap-right-edge *frame-charmap*))
 
   ;; Blit the top side.
   (paint-horizontal-line canvas
                          y
                          (1+ x)
-                         (+ x (width (frame-box-contents box)))
+                         (+ x (width (contents box)))
                          :char (frame-charmap-top-edge *frame-charmap*))
 
   ;; Blit the bottom side.
   (paint-horizontal-line canvas
-                         (+ 1 y (height (frame-box-contents box)))
+                         (+ 1 y (height (contents box)))
                          (1+ x)
-                         (+ x (width (frame-box-contents box)))
+                         (+ x (width (contents box)))
                          :char (frame-charmap-bottom-edge *frame-charmap*))
 
   ;; Blit the top-left corner.
@@ -161,24 +164,24 @@ This variable is sometimes used to disable recording for editing purposes.")
 
   ;; Blit the top-right corner.
   (setf (canvas-ref canvas
-                    (+ 1 x (width (frame-box-contents box)))
+                    (+ 1 x (width (contents box)))
                     y)
         (frame-charmap-top-right-corner *frame-charmap*))
 
   ;; Blit the bottom-left corner.
   (setf (canvas-ref canvas
                     x
-                    (+ 1 y (height (frame-box-contents box))))
+                    (+ 1 y (height (contents box))))
         (frame-charmap-bottom-left-corner *frame-charmap*))
 
   ;; Blit the bottom-right corner.
   (setf (canvas-ref canvas
-                    (+ 1 x (width (frame-box-contents box)))
-                    (+ 1 y (height (frame-box-contents box))))
+                    (+ 1 x (width (contents box)))
+                    (+ 1 y (height (contents box))))
         (frame-charmap-bottom-right-corner *frame-charmap*))
 
   ;; Blit the frame contents.
-  (blit canvas (frame-box-contents box) (1+ x) (1+ y)))
+  (blit canvas (contents box) (1+ x) (1+ y)))
 
 ;;; It is the job of the BLIT method of a ROW-BOX (and other
 ;;; concatenative boxes) to take care of baselines.
@@ -221,7 +224,7 @@ This variable is sometimes used to disable recording for editing purposes.")
   "The charmap to use when drawing parentheses.")
 
 (defmethod blit (canvas (box parens-box) x y)
-  (let* ((contents (parens-box-contents box))
+  (let* ((contents (contents box))
          (h (height box)))
     (if (= h 1)
         (blit canvas (glue (box (paren-charmap-small-open *paren-charmap*))
@@ -343,6 +346,6 @@ This variable is sometimes used to disable recording for editing purposes.")
 
     ;; argument
     (blit canvas
-          (sqrt-box-contents box)
+          (sqrt-box-base box)
           (+ 2 shift x)
           (1+ y))))

@@ -25,7 +25,8 @@
    #:glass-box
    #:frozen-box
    #:freeze                             ; FUNCTION
-   #:phantom-box
+   #:phantom-box                        ; CLASS
+   #:phantom                            ; FUNCTION
    #:string-box
    #:frac-box
    #:*frac-box-vinculum-padding*
@@ -38,9 +39,9 @@
    #:parens-box)
 
   ;; blit.lisp
-  ;; XXX: Do we really want to export this junk?
   (:export
-   #:blit)
+   #:blit                               ; GENERIC, METHODS
+   )
 
   ;; render.lisp
   (:export

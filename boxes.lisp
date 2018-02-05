@@ -1,6 +1,6 @@
 ;;;; boxes.lisp
 ;;;;
-;;;; Copyright (c) 2013-2014 Robert Smith
+;;;; Copyright (c) 2013-2018 Robert Smith
 ;;;;
 ;;;; Basic building blocks of a "formula".
 
@@ -126,20 +126,20 @@ N.B., Successive calls may return the same object."
 
 (defclass glass-box (box)
   ((contents :initarg :contents
-             :accessor glass-box-contents))
+             :accessor contents))
   (:documentation "A box that simply wraps its contents. An identity box. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
 
 (defun glass-box (contents)
   (make-instance 'glass-box :contents contents))
 
 (defmethod width ((box glass-box))
-  (width (glass-box-contents box)))
+  (width (contents box)))
 
 (defmethod height ((box glass-box))
-  (height (glass-box-contents box)))
+  (height (contents box)))
 
 (defmethod baseline ((box glass-box))
-  (baseline (glass-box-contents box)))
+  (baseline (contents box)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frozen Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -147,40 +147,41 @@ N.B., Successive calls may return the same object."
 ;;; XXX: Should we instead subclass `GLASS-BOX'?
 (defclass frozen-box (box)
   ((contents :initarg :contents
-             :accessor frozen-box-contents))
+             :accessor contents))
   (:documentation "A box that simply wraps its contents like `GLASS-BOX'. However, it is different from `GLASS-BOX' in that this box exists so that a single conceptual box (composed of several sub-boxes) can be treated as just a single opaque (\"frozen\") box."))
 
 (defun freeze (contents)
   (make-instance 'frozen-box :contents contents))
 
 (defmethod width ((box frozen-box))
-  (width (frozen-box-contents box)))
+  (width (contents box)))
 
 (defmethod height ((box frozen-box))
-  (height (frozen-box-contents box)))
+  (height (contents box)))
 
 (defmethod baseline ((box frozen-box))
-  (baseline (frozen-box-contents box)))
+  (baseline (contents box)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Phantom Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass phantom-box (box)
   ((contents :initarg :contents
-             :accessor phantom-box-contents))
+             :accessor contents))
   (:documentation "A box which will render as empty space, of the same dimensions of its contents."))
 
-(defun phantom-box (contents)
+(defun phantom (contents)
   (make-instance 'phantom-box :contents contents))
 
 (defmethod width ((box phantom-box))
-  (width (phantom-box-contents box)))
+  (width (contents box)))
 
 (defmethod height ((box phantom-box))
-  (height (phantom-box-contents box)))
+  (height (contents box)))
 
 (defmethod baseline ((box phantom-box))
-  (baseline (phantom-box-contents box)))
+  (baseline (contents box)))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; String Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -251,7 +252,7 @@ N.B., Successive calls may return the same object."
 
 (defclass frame-box (box)
   ((contents :initarg :contents
-             :accessor frame-box-contents))
+             :accessor contents))
   (:documentation "A box decorated with a rectangular frame. This is often used to highlight a particular portion of a formula."))
 
 (defun frame-box (contents)
@@ -260,14 +261,14 @@ N.B., Successive calls may return the same object."
 
 (defmethod width ((box frame-box))
   (+ 2
-     (width (frame-box-contents box))))
+     (width (contents box))))
 
 (defmethod height ((box frame-box))
   (+ 2
-     (height (frame-box-contents box))))
+     (height (contents box))))
 
 (defmethod baseline ((box frame-box))
-  (1+ (baseline (frame-box-contents box))))
+  (1+ (baseline (contents box))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Row Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -333,7 +334,7 @@ N.B., Successive calls may return the same object."
 
 (defclass parens-box (box)
   ((contents :initarg :contents
-             :accessor parens-box-contents))
+             :accessor contents))
   (:documentation "Representation of a box which is parenthesized."))
 
 (defun parens-box (contents)
@@ -341,19 +342,19 @@ N.B., Successive calls may return the same object."
   (make-instance 'parens-box :contents contents))
 
 (defmethod width ((box parens-box))
-  (let ((w (width (parens-box-contents box)))
-        (h (height (parens-box-contents box))))
+  (let ((w (width (contents box)))
+        (h (height (contents box))))
     (+ w
        (if (<= 0 h 2)
            2                            ; Small contents are printed as (x).
            4))))                        ; Large contents have extra spacing.
 
 (defmethod height ((box parens-box))
-  (let ((h (height (parens-box-contents box))))
+  (let ((h (height (contents box))))
     (if (zerop h) 1 h)))
 
 (defmethod baseline ((box parens-box))
-  (baseline (parens-box-contents box)))
+  (baseline (contents box)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Script Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -434,28 +435,28 @@ N.B., Successive calls may return the same object."
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Square Root Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass sqrt-box (box)
-  ((contents :initarg :contents
-             :accessor sqrt-box-contents)
+  ((base :initarg :base
+         :accessor sqrt-box-base)
    (power :initarg :power
           :accessor sqrt-box-power))
   (:documentation "Representation of an object whose root is being taken."))
 
-(defun sqrt-box (contents &key (power (empty-box)))
-  "Construct a `SQRT-BOX' of the contents CONTENTS, optionally whose power is POWER."
+(defun sqrt-box (base &key (power (empty-box)))
+  "Construct a `SQRT-BOX' around BASE, optionally whose power is POWER."
   (assert (or (zerop (height power))
               (= 1 (height power)))
           (power)
           "The POWER of a SQRT-BOX must have a height of 0 or 1.")
-  (make-instance 'sqrt-box :contents contents
+  (make-instance 'sqrt-box :base base
                            :power power))
 
 (defmethod width ((box sqrt-box))
   (+ 2
      (max 0 (1- (width (sqrt-box-power box))))
-     (max 1 (width (sqrt-box-contents box)))))
+     (max 1 (width (sqrt-box-base box)))))
 
 (defmethod height ((box sqrt-box))
-  (1+ (height (sqrt-box-contents box))))
+  (1+ (height (sqrt-box-base box))))
 
 (defmethod baseline ((box sqrt-box))
-  (baseline (sqrt-box-contents box)))
+  (baseline (sqrt-box-base box)))
