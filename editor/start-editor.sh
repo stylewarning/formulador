@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ccl --batch --quiet \
-    -e '(ql:quickload :formulador-editor)' \
-    -e '(formulador-editor::start-editor)' \
-    -e '(quit)'
+sbcl --noinform --non-interactive \
+     --eval '(ql:quickload :formulador-editor)' \
+     --eval '(formulador-editor::start-editor)' \
+     --eval '(uiop:quit)'
