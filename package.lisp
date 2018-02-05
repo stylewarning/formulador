@@ -1,12 +1,10 @@
 ;;;; package.lisp
 ;;;;
-;;;; Copyright (c) 2011-2014 Robert Smith
-;;;;
-;;;; Declare the formulador package.
+;;;; Copyright (c) 2011-2018 Robert Smith
 
 (defpackage #:formulador
   (:use #:cl)
-  
+
   ;; canvas.lisp
   (:export
    #:canvas
@@ -17,10 +15,11 @@
 
   ;; boxes.lisp
   (:export
+   #:*globally-disable-dimensions-caching* ; DYNAMIC VARIABLE
    #:width
    #:height
    #:baseline
-   
+
    #:box                                ; CLASS, GENERIC, METHODS
    #:empty-box
    #:glass-box
@@ -37,16 +36,16 @@
    #:sqrt-box
    #:script-box
    #:parens-box)
-  
+
   ;; blit.lisp
   ;; XXX: Do we really want to export this junk?
   (:export
    #:blit)
-  
+
   ;; render.lisp
   (:export
    #:draw)
-  
+
   ;; constructions.lisp
   (:export
    #:glue
@@ -58,5 +57,5 @@
    #:+integral+
    #:+double-integral+
    #:+triple-integral+)
-  
+
   (:documentation "Formula renderering package."))

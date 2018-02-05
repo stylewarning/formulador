@@ -42,35 +42,45 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar *globally-disable-dimensions-caching* nil
+  "Globally disable caching of the dimensions for all objects.")
+
 (defclass box ()
-  ((cached-width :initform nil
-                 :initarg :cached-width
+  ((cached-width :initarg :cached-width
                  :accessor box-cached-width
                  :documentation "The cached width of the box.")
-   (cached-height :initform nil
-                  :initarg :cached-height
+   (cached-height :initarg :cached-height
                   :accessor box-cached-height
                   :documentation "The cached height of the box.")
-   (cached-baseline :initform nil
-                    :initarg :cached-baseline
+   (cached-baseline :initarg :cached-baseline
                     :accessor box-cached-baseline
-                    :documentation "The cached baseline of the box."))
+                    :documentation "The cached baseline of the box.")
+   (dimensions-caching-disabled :initarg :dimensions-caching-disabled
+                                :accessor box-dimensions-caching-disabled
+                                :documentation "Disable caching of the dimensions for just this object. This may be required if objects which the box contains are mutable."))
+  (:default-initargs :cached-width nil
+                     :cached-height nil
+                     :cached-baseline nil
+                     :dimensions-caching-disabled nil)
   (:documentation "Abstract class for a box, which can be rendered as a formula. Boxes are the building blocks of formulas."))
 
-(defmethod width :around ((box box))
-  (or (box-cached-width box)
-      (setf (box-cached-width box)
-            (call-next-method box))))
-
-(defmethod height :around ((box box))
-  (or (box-cached-height box)
-      (setf (box-cached-height box)
-            (call-next-method box))))
-
-(defmethod baseline :around ((box box))
-  (or (box-cached-baseline box)
-      (setf (box-cached-baseline box)
-            (call-next-method box))))
+(macrolet ((define-cached-reader (reader accessor)
+             `(defmethod ,reader :around ((box box))
+                (cond
+                  ;; Is the caching disabled anywhere?
+                  ((or (box-dimensions-caching-disabled box)
+                       *globally-disable-dimensions-caching*)
+                   (call-next-method))
+                  ;; Caching is enabled, but we haven't computed it
+                  ;; before.
+                  ((null (,accessor box))
+                   (setf (,accessor box) (call-next-method)))
+                  ;; Otherwise, return our cached value.
+                  (t
+                   (,accessor box))))))
+  (define-cached-reader width box-cached-width)
+  (define-cached-reader height box-cached-height)
+  (define-cached-reader baseline box-cached-baseline))
 
 
 ;;; Attempting to box up a box just returns the box.
@@ -83,19 +93,18 @@
 
 (defclass empty-box (box)
   ()
+  (:default-initargs :cached-width 0
+                     :cached-height 0
+                     :cached-baseline 0)
   (:documentation "An empty box that doesn't render to anything.
 
 This class is intended to be a singleton class, and should be accessed with #'EMPTY-BOX."))
 
-
 (defun empty-box ()
   "Return an instance of an empty box.
 
-Generally, though not necessarily, the value returned will be EQ in successive calls."
-  (load-time-value (make-instance 'empty-box :cached-width 0
-                                             :cached-height 0
-                                             :cached-baseline 0)
-                   t))
+N.B., Successive calls may return the same object."
+  (load-time-value (make-instance 'empty-box) t))
 
 (defmethod width ((box empty-box))
   0)
