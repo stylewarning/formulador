@@ -30,6 +30,17 @@
    #:freeze                             ; FUNCTION
    #:phantom-box                        ; CLASS
    #:phantom                            ; FUNCTION
+   #:hphantom-box                       ; CLASS
+   #:hphantom                           ; FUNCTION
+   #:vphantom-box                       ; CLASS
+   #:vphantom                           ; FUNCTION
+   #:overlap-box                        ; ABSTRACT CLASS
+   #:llap-box                           ; CLASS
+   #:llap                               ; FUNCTION
+   #:clap-box                           ; CLASS
+   #:clap                               ; FUNCTION
+   #:rlap-box                           ; CLASS
+   #:rlap                               ; FUNCTION
    #:string-box
    #:frac-box
    #:*frac-box-vinculum-padding*

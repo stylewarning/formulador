@@ -84,11 +84,30 @@ This variable is sometimes used to disable recording for editing purposes.")
           x
           y)))
 
+;;; Phantom Box
+
 ;; Covers PHANTOM-BOX, HPHANTOM-BOX, VPHANTOM-BOX
 (defmethod blit (canvas (box phantom-box) x y)
   (declare (ignore canvas box x y))
   ;; do nothing
   )
+
+;;; Overlap Boxes
+
+;; CAREFUL! These may overwrite other characters!
+(defmethod blit (canvas (box llap-box) x y)
+  (blit canvas (contents box) x y))
+
+(defmethod blit (canvas (box clap-box) x y)
+  (let ((shift (floor (width (contents box)) 2)))
+    (blit canvas (contents box) (- x shift) y)))
+
+(defmethod blit (canvas (box rlap-box) x y)
+  (let ((shift (width (contents box))))
+    (blit canvas (contents box) (- x shift) y)))
+
+
+;;; String Box
 
 (defmethod blit (canvas (box string-box) x y)
   (blit canvas (string-box-string box) x y))

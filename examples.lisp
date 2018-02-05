@@ -18,6 +18,9 @@
 (defun pow (a b)
   (script-box a :superscript b))
 
+(defun sub (a b)
+  (script-box a :subscript b))
+
 
 ;;; > (draw *chudnovsky*)
 ;;;
@@ -106,9 +109,30 @@
                                     :subscript next)))))
     (frob n)))
 
+(defparameter *tb-22-4-ex1*
+  ;; Slightly modified example from the TUGBoat Vol 22 No 4.
+  (tape
+   (box "X")
+   (box "=")
+   ;; Use of CLAP
+   (limits-box +sigma+
+               :below (clap (box "1 ≤ i ≤ n")))
+   (sub (box "X") (box "i"))
+   (box "=")
+   ;; No use of CLAP
+   (limits-box +sigma+
+               :below (box "1 ≤ i ≤ n"))
+   (sub (box "X") (box "i"))))
+
 (defun draw-all ()
-  (print (draw *chudnovsky*))
-  (print (draw *gauss-law*))
-  (print (draw *thermo*))
-  (print (draw (subscript-test 2)))
-  'done)
+  (flet ((demo (string c)
+           (write-line string)
+           (princ (draw c))
+           (terpri)
+           (terpri)))
+    (demo "Chudnovsky formula:" *chudnovsky*)
+    (demo "Gauss's law:" *gauss-law*)
+    (demo "Random thing from thermo:" *thermo*)
+    (demo "Nested subscripts:" (subscript-test 2))
+    (demo "mathclap demo:" *tb-22-4-ex1*)
+    ':done))

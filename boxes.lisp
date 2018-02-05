@@ -183,6 +183,83 @@ N.B., Successive calls may return the same object."
   (baseline (contents box)))
 
 
+(defclass hphantom-box (phantom-box)
+  ()
+  (:documentation "A box which will render as empty space, of zero height and the same width of its contents."))
+
+(defun hphantom (contents)
+  (make-instance 'hphantom-box :contents contents))
+
+(defmethod width ((box hphantom-box))
+  (width (contents box)))
+
+(defmethod height ((box hphantom-box))
+  0)
+
+(defmethod baseline ((box hphantom-box))
+  0)
+
+
+(defclass vphantom-box (phantom-box)
+  ()
+  (:documentation "A box which will render as empty space, of zero width and the same height and baseline of its contents."))
+
+(defun vphantom (contents)
+  (make-instance 'vphantom-box :contents contents))
+
+(defmethod width ((box vphantom-box))
+  0)
+
+(defmethod height ((box vphantom-box))
+  (height (contents box)))
+
+(defmethod baseline ((box vphantom-box))
+  (baseline (contents box)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Overlap Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass overlap-box (box)
+  ((contents :initarg :contents
+             :accessor contents))
+  (:documentation "Base class for \"overlap\" boxes. These are boxes to support the LaTeX-esque commands \\llap, \\clap, and \\rlap."))
+
+(defmethod width ((box overlap-box))
+  0)
+
+(defmethod height ((box overlap-box))
+  0)
+
+(defmethod baseline ((box overlap-box))
+  0)
+
+
+(defclass llap-box (overlap-box)
+  ()
+  (:documentation "A box which writes its contents left-aligned but has vanishing dimensions."))
+
+(defun llap (contents)
+  "Similar to the LaTeX command \\llap."
+  (make-instance 'llap-box :contents contents))
+
+
+(defclass clap-box (overlap-box)
+  ()
+  (:documentation "A box which writes its contents center-aligned but has vanishing dimensions."))
+
+(defun clap (contents)
+  "Similar to the LaTeX command \\clap."
+  (make-instance 'clap-box :contents contents))
+
+
+(defclass rlap-box (overlap-box)
+  ()
+  (:documentation "A box which writes its contents right-aligned but has vanishing dimensions."))
+
+(defun rlap (contents)
+  "Similar to the LaTeX command \\rlap."
+  (make-instance 'rlap-box :contents contents))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; String Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
