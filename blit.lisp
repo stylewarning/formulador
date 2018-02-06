@@ -215,24 +215,38 @@ This variable is sometimes used to disable recording for editing purposes.")
 ;;;    **
 (defmethod blit (canvas (box row-box) x y)
   (let ((padding (row-box-padding box))
-        #+#:ignore
         (height (height box))
-        #+#:ignore
-        (baseline (baseline box))
+        (align (row-box-align box))
         (extent (height-above-baseline box)))
     (labels ((rec (boxes x)
                (unless (null boxes)
-                 (let ((the-box (first boxes)))
-                   (blit canvas
-                         the-box
-                         x
-                         ;; Align on the baselines.
-                         (+ y (- extent (height-above-baseline the-box)))
-                         #+#:ignore     ; This will vertically center
-                         (+ y (floor (- height (height the-box)) 2))))
-
-                 (rec (rest boxes) (+ x padding (width (first boxes)))))))
+                 (let* ((the-box (first boxes))
+                        (delta
+                          (ecase align
+                            (:top 0)
+                            (:middle (floor (- height (height the-box)) 2))
+                            (:baseline (- extent (height-above-baseline the-box)))
+                            (:bottom (- height (height the-box))))))
+                   (blit canvas the-box x (+ y delta))
+                   (rec (rest boxes) (+ x padding (width the-box)))))))
       (rec (row-box-contents box) x))))
+
+(defmethod blit (canvas (box column-box) x y)
+  (let ((padding (column-box-padding box))
+        (align (column-box-align box))
+        ;; Width of a column box is defined to be the max width of contents
+        (width (width box)))
+    (labels ((rec (boxes y)
+               (unless (null boxes)
+                 (let* ((the-box (first boxes))
+                        (delta
+                          (ecase align
+                            (:left 0)
+                            (:middle (floor (- width (width the-box)) 2))
+                            (:right (- width (width the-box))))))
+                   (blit canvas the-box (+ x delta) y)
+                   (rec (rest boxes) (+ y (height the-box) padding))))))
+      (rec (column-box-contents box) y))))
 
 (defmethod blit (canvas (box picture-box) x y)
   (loop :for c :in (picture-box-picture box)
