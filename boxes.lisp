@@ -350,16 +350,26 @@ N.B., Successive calls may return the same object."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Row Boxes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(deftype vertical-alignment ()
+  "The alignments available for ROW-BOX."
+  '(member :top :baseline :middle :bottom))
+
 (defclass row-box (box)
   ((padding :initarg :padding
             :type (integer 0)
             :accessor row-box-padding)
    (contents :initarg :contents
-             :accessor row-box-contents))
+             :accessor row-box-contents)
+   (align :initarg :align
+          :accessor row-box-align
+          :type verticle-alignment
+          :documentation "Contents can be aligned :TOP,
+          :BASELINE (default), :MIDDLE, or :BOTTOM."))
   (:documentation "A horizontal concatenation of boxes."))
 
-(defun row-box (boxes &key (padding 0))
+(defun row-box (boxes &key (padding 0) (align :baseline))
   (make-instance 'row-box :padding padding
+                          :align align
                           :contents boxes))
 
 (defmethod width ((box row-box))
@@ -537,3 +547,45 @@ N.B., Successive calls may return the same object."
 
 (defmethod baseline ((box sqrt-box))
   (baseline (sqrt-box-base box)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; COLUMN BOXES ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftype horizontal-alignment ()
+  "HORIZONTAL-ALIGNMENT specifies the alignments for COLUMN-BOX."
+  '(member :left :middle :right))
+
+(defclass column-box (box)
+  ((padding :initarg :padding
+            :type (integer 0)
+            :accessor column-box-padding)
+   (align :initarg :align
+          :accessor column-box-align
+          :type horizontal-alignment
+          :documentation "Contents can be aligned :LEFT (default),
+          :MIDDLE, or :RIGHT.")
+   (contents :initarg :contents
+             :accessor column-box-contents))
+  (:documentation "A vertical concatenation of boxes."))
+
+(defun column-box (boxes &key (padding 0) (align :left))
+  (make-instance 'column-box :padding padding
+                             :align align
+                             :contents boxes))
+
+(defmethod width ((box column-box))
+  (maximum (column-box-contents box)
+           :key #'width))
+
+(defmethod height ((box column-box))
+  (let* ((items (column-box-contents box))
+         (nb-items (length items)))
+    (+ (sum items :key #'height)
+       (if (zerop nb-items) ; account for padding
+           0
+           (* (1- nb-items)
+              (column-box-padding box))))))
+
+(defmethod baseline ((box column-box))
+  (floor (height box) 2))
+
+

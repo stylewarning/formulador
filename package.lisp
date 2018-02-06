@@ -45,7 +45,10 @@
    #:frac-box
    #:*frac-box-vinculum-padding*
    #:frame-box
+   #:vertical-alignment
    #:row-box
+   #:horizontal-alignment
+   #:column-box
    #:picture-box
    #:limits-box
    #:sqrt-box
