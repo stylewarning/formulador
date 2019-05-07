@@ -1,6 +1,6 @@
 ;;;; boxes.lisp
 ;;;;
-;;;; Copyright (c) 2013-2018 Robert Smith
+;;;; Copyright (c) 2013-2019 Robert Smith
 ;;;;
 ;;;; Basic building blocks of a "formula".
 
@@ -373,7 +373,7 @@ N.B., Successive calls may return the same object."
              :accessor row-box-contents)
    (align :initarg :align
           :accessor row-box-align
-          :type verticle-alignment
+          :type vertical-alignment
           :documentation "Contents can be aligned :TOP,
           :BASELINE (default), :MIDDLE, or :BOTTOM."))
   (:documentation "A horizontal concatenation of boxes."))
@@ -599,4 +599,64 @@ N.B., Successive calls may return the same object."
 (defmethod baseline ((box column-box))
   (floor (height box) 2))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; ARRAY BOXES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass array-box (box)
+  ((contents :initarg :contents
+             :reader array-box-contents)
+   (row-spacing :initarg :row-spacing
+                :reader array-box-row-spacing
+                :documentation "The number of empty cells between rows.")
+   (column-padding :initarg :column-spacing
+                   :reader array-box-column-spacing
+                   :documentation "The number of empty cells between columns.")
+   ;; These are "private" members of the class.
+   ;;
+   ;; The rows are stored for their *height*, and the columns are
+   ;; stored for their *width*!
+   (rows :accessor %array-box-rows)
+   (columns :accessor %array-box-columns))
+  (:default-initargs :row-spacing 0
+                     :column-spacing 1)
+  (:documentation "An array of boxes where each row and column has independent alignment."))
+
+(defun make-array-box (rows cols)
+  (let ((contents (make-array (list rows cols))))
+    (loop :for i :below (array-total-size contents)
+          :for a := (box (prin1-to-string (- 10000 (random 20000))))
+          :for b := (box (prin1-to-string (- 10000 (random 20000))))
+          :for n := (box (prin1-to-string (1+ (random 9))))
+          :do (setf (row-major-aref contents i)
+                    (alexandria:whichever
+                     (box a)
+                     (sqrt-box (frac-box (box a) (box b)) :power (box n))
+                     (script-box (parens-box (frac-box (box a) (box b))) :superscript (box n)))))
+    (let ((box (make-instance 'array-box :contents contents)))
+      (setf (%array-box-rows box)
+            (loop :for row :below rows
+                  :for row-box := (row-box (loop :for col :below cols
+                                                 :collect (aref contents row col)))
+                  :collect row-box))
+      (setf (%array-box-columns box)
+            (loop :for col :below cols
+                  :for col-box := (column-box (loop :for row :below rows
+                                                    :collect (aref contents row col))
+                                               :align ':middle)
+                  :collect col-box))
+      ;; return the box
+      box)))
+
+(defmethod width ((box array-box))
+  (+ (sum (%array-box-columns box) :key #'width)
+     (* (array-box-column-spacing box)
+        (1- (array-dimension (array-box-contents box) 1)))))
+
+(defmethod height ((box array-box))
+  (+ (sum (%array-box-rows box) :key #'height)
+     (* (array-box-row-spacing box)
+        (1- (array-dimension (array-box-contents box) 0)))))
+
+(defmethod baseline ((box array-box))
+  (floor (height box) 2))
 
