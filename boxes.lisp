@@ -17,10 +17,21 @@
 ;;;        ^  #                   #  |
 ;;; HEIGHT |  #                   #  v
 ;;;  (4)   |  #-------------------# ---
-;;;        v  #                   #     BASELINE (1)
+;;;        v  #                   #     BASELINE (1) (example)
 ;;;       --- ##################### ---
 ;;;                                  ^
 ;;;                                  |
+;;;
+;;; The height is the total height of the box. This is the total
+;;; number of vertical cells needed to paint the object.
+;;;
+;;; The width is the total width of the box. This is the total number
+;;; of horizontal cells needed to paint the object.
+;;;
+;;; The baseline is a measure of a number of cells from the bottom of
+;;; the box. The baseline is how the object "sits" on a line and is
+;;; used for alignment. For instance, a fraction is usually aligned at
+;;; its vinculum, which would be its baseline.
 
 (defgeneric width (object)
   (:documentation "The width of a box. This is the number of characters a box requires horizontally."))
@@ -127,6 +138,7 @@ N.B., Successive calls may return the same object."
 (defclass glass-box (box)
   ((contents :initarg :contents
              :accessor contents))
+  (:default-initargs :dimensions-caching-disabled t)
   (:documentation "A box that simply wraps its contents. An identity box. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
 
 (defun glass-box (contents)
@@ -144,10 +156,9 @@ N.B., Successive calls may return the same object."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frozen Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; XXX: Should we instead subclass `GLASS-BOX'?
 (defclass frozen-box (box)
   ((contents :initarg :contents
-             :accessor contents))
+             :reader contents))
   (:documentation "A box that simply wraps its contents like `GLASS-BOX'. However, it is different from `GLASS-BOX' in that this box exists so that a single conceptual box (composed of several sub-boxes) can be treated as just a single opaque (\"frozen\") box."))
 
 (defun freeze (contents)
@@ -367,7 +378,7 @@ N.B., Successive calls may return the same object."
           :BASELINE (default), :MIDDLE, or :BOTTOM."))
   (:documentation "A horizontal concatenation of boxes."))
 
-(defun row-box (boxes &key (padding 0) (align :baseline))
+(defun row-box (boxes &key (padding 0) (align ':baseline))
   (make-instance 'row-box :padding padding
                           :align align
                           :contents boxes))
