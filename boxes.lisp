@@ -621,7 +621,10 @@ N.B., Successive calls may return the same object."
                      :column-spacing 1)
   (:documentation "An array of boxes where each row and column has independent alignment."))
 
-(defun make-array-box (rows cols)
+(defun make-array-box (rows cols &key (row-alignment
+                                       (make-list rows :initial-element ':baseline))
+                                      (column-alignment
+                                       (make-list cols :initial-element ':middle)))
   (let ((contents (make-array (list rows cols))))
     (loop :for i :below (array-total-size contents)
           :for a := (box (prin1-to-string (- 10000 (random 20000))))
@@ -635,14 +638,17 @@ N.B., Successive calls may return the same object."
     (let ((box (make-instance 'array-box :contents contents)))
       (setf (%array-box-rows box)
             (loop :for row :below rows
+                  :for align :in row-alignment
                   :for row-box := (row-box (loop :for col :below cols
-                                                 :collect (aref contents row col)))
+                                                 :collect (aref contents row col))
+                                           :align align)
                   :collect row-box))
       (setf (%array-box-columns box)
             (loop :for col :below cols
+                  :for align :in column-alignment
                   :for col-box := (column-box (loop :for row :below rows
                                                     :collect (aref contents row col))
-                                               :align ':middle)
+                                               :align align)
                   :collect col-box))
       ;; return the box
       box)))
