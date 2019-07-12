@@ -382,3 +382,49 @@ This variable is sometimes used to disable recording for editing purposes.")
           (sqrt-box-base box)
           (+ 2 shift x)
           (1+ y))))
+
+
+(defmethod blit (canvas (box array-box) x y)
+  (let ((contents (array-box-contents box))
+        (row-spacing (array-box-row-spacing box))
+        (col-spacing (array-box-column-spacing box)))
+    (destructuring-bind (rows cols) (array-dimensions contents)
+      (let ((current-height 0))
+        (dotimes (row rows)
+          (let* ((this-row (nth row (%array-box-rows box)))
+                 (this-row-height (height this-row))
+                 (this-row-align (row-box-align this-row))
+                 (current-width 0))
+            (declare (ignorable this-row-align))
+            (dotimes (col cols)
+              (let* ((this-col (nth col (%array-box-columns box)))
+                     (this-col-width (width this-col))
+                     (this-col-align (column-box-align this-col))
+                     (this-box (aref contents row col))
+                     (this-box-width (width this-box))
+                     (this-box-height (height this-box)))
+                (declare (ignorable this-col-align))
+                ;; Sanity checks.
+                (assert (<= this-box-width this-col-width))
+                (assert (<= this-box-height this-row-height))
+                ;; We got a total of THIS-ROW-HEIGHT x THIS-ROW-WIDTH of
+                ;; space to paint.
+                (let ((relative-x-offset (ecase this-col-align
+                                           (:left 0)
+                                           (:middle (floor (- this-col-width this-box-width)
+                                                           2))
+                                           (:right (- this-col-width this-box-width))))
+                      (relative-y-offset (ecase this-row-align
+                                           (:top 0)
+                                           (:baseline (- (height-above-baseline this-row)
+                                                         (height-above-baseline this-box)))
+                                           (:middle (floor (- this-row-height this-box-height)
+                                                           2))
+                                           (:bottom (- this-row-height this-box-height)))))
+                  (blit canvas this-box
+                        (+ x current-width  relative-x-offset)
+                        (+ y current-height relative-y-offset)))
+                ;; After writing the column element, increment the spacing.
+                (incf current-width (+ this-col-width col-spacing))))
+            ;; After a row, accumulate the height.
+            (incf current-height (+ this-row-height row-spacing))))))))

@@ -1,6 +1,6 @@
 ;;;; boxes.lisp
 ;;;;
-;;;; Copyright (c) 2013-2018 Robert Smith
+;;;; Copyright (c) 2013-2019 Robert Smith
 ;;;;
 ;;;; Basic building blocks of a "formula".
 
@@ -17,10 +17,21 @@
 ;;;        ^  #                   #  |
 ;;; HEIGHT |  #                   #  v
 ;;;  (4)   |  #-------------------# ---
-;;;        v  #                   #     BASELINE (1)
+;;;        v  #                   #     BASELINE (1) (example)
 ;;;       --- ##################### ---
 ;;;                                  ^
 ;;;                                  |
+;;;
+;;; The height is the total height of the box. This is the total
+;;; number of vertical cells needed to paint the object.
+;;;
+;;; The width is the total width of the box. This is the total number
+;;; of horizontal cells needed to paint the object.
+;;;
+;;; The baseline is a measure of a number of cells from the bottom of
+;;; the box. The baseline is how the object "sits" on a line and is
+;;; used for alignment. For instance, a fraction is usually aligned at
+;;; its vinculum, which would be its baseline.
 
 (defgeneric width (object)
   (:documentation "The width of a box. This is the number of characters a box requires horizontally."))
@@ -127,6 +138,7 @@ N.B., Successive calls may return the same object."
 (defclass glass-box (box)
   ((contents :initarg :contents
              :accessor contents))
+  (:default-initargs :dimensions-caching-disabled t)
   (:documentation "A box that simply wraps its contents. An identity box. If G(B) is a glass box wrapping the box B, then G(B) will render the same as B."))
 
 (defun glass-box (contents)
@@ -144,10 +156,9 @@ N.B., Successive calls may return the same object."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Frozen Box ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; XXX: Should we instead subclass `GLASS-BOX'?
 (defclass frozen-box (box)
   ((contents :initarg :contents
-             :accessor contents))
+             :reader contents))
   (:documentation "A box that simply wraps its contents like `GLASS-BOX'. However, it is different from `GLASS-BOX' in that this box exists so that a single conceptual box (composed of several sub-boxes) can be treated as just a single opaque (\"frozen\") box."))
 
 (defun freeze (contents)
@@ -362,12 +373,12 @@ N.B., Successive calls may return the same object."
              :accessor row-box-contents)
    (align :initarg :align
           :accessor row-box-align
-          :type verticle-alignment
+          :type vertical-alignment
           :documentation "Contents can be aligned :TOP,
           :BASELINE (default), :MIDDLE, or :BOTTOM."))
   (:documentation "A horizontal concatenation of boxes."))
 
-(defun row-box (boxes &key (padding 0) (align :baseline))
+(defun row-box (boxes &key (padding 0) (align ':baseline))
   (make-instance 'row-box :padding padding
                           :align align
                           :contents boxes))
@@ -588,4 +599,70 @@ N.B., Successive calls may return the same object."
 (defmethod baseline ((box column-box))
   (floor (height box) 2))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; ARRAY BOXES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass array-box (box)
+  ((contents :initarg :contents
+             :reader array-box-contents)
+   (row-spacing :initarg :row-spacing
+                :reader array-box-row-spacing
+                :documentation "The number of empty cells between rows.")
+   (column-padding :initarg :column-spacing
+                   :reader array-box-column-spacing
+                   :documentation "The number of empty cells between columns.")
+   ;; These are "private" members of the class.
+   ;;
+   ;; The rows are stored for their *height*, and the columns are
+   ;; stored for their *width*!
+   (rows :accessor %array-box-rows)
+   (columns :accessor %array-box-columns))
+  (:default-initargs :row-spacing 0
+                     :column-spacing 1)
+  (:documentation "An array of boxes where each row and column has independent alignment."))
+
+(defun make-array-box (rows cols &key (row-alignment
+                                       (make-list rows :initial-element ':baseline))
+                                      (column-alignment
+                                       (make-list cols :initial-element ':middle)))
+  (let ((contents (make-array (list rows cols))))
+    (loop :for i :below (array-total-size contents)
+          :for a := (box (prin1-to-string (- 10000 (random 20000))))
+          :for b := (box (prin1-to-string (- 10000 (random 20000))))
+          :for n := (box (prin1-to-string (1+ (random 9))))
+          :do (setf (row-major-aref contents i)
+                    (alexandria:whichever
+                     (box a)
+                     (sqrt-box (frac-box (box a) (box b)) :power (box n))
+                     (script-box (parens-box (frac-box (box a) (box b))) :superscript (box n)))))
+    (let ((box (make-instance 'array-box :contents contents)))
+      (setf (%array-box-rows box)
+            (loop :for row :below rows
+                  :for align :in row-alignment
+                  :for row-box := (row-box (loop :for col :below cols
+                                                 :collect (aref contents row col))
+                                           :align align)
+                  :collect row-box))
+      (setf (%array-box-columns box)
+            (loop :for col :below cols
+                  :for align :in column-alignment
+                  :for col-box := (column-box (loop :for row :below rows
+                                                    :collect (aref contents row col))
+                                               :align align)
+                  :collect col-box))
+      ;; return the box
+      box)))
+
+(defmethod width ((box array-box))
+  (+ (sum (%array-box-columns box) :key #'width)
+     (* (array-box-column-spacing box)
+        (1- (array-dimension (array-box-contents box) 1)))))
+
+(defmethod height ((box array-box))
+  (+ (sum (%array-box-rows box) :key #'height)
+     (* (array-box-row-spacing box)
+        (1- (array-dimension (array-box-contents box) 0)))))
+
+(defmethod baseline ((box array-box))
+  (floor (height box) 2))
 
