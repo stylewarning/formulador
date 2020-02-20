@@ -36,12 +36,12 @@
 
 
 (defun pow (a b)
-  (formulador:script-box a :superscript b))
+  (formulador:script-box (formulador:box a) :superscript (formulador:box b )))
 
 
 
 (defun sub (a b)
-  (formulador:script-box a :subscript b))
+  (formulador:script-box (formulador:box a) :subscript (formulador:box b)))
 
 (defun frak (a b)
   (formulador:frac-box (formulador:box a)
@@ -86,6 +86,41 @@
 
 ;; (formulador-command "(frak \"2\" \"efr\")")
 
+
+;; (formulador-command 
+;; "
+;; (rowb (frak \"1\" \"2\") (formulador:limits-box formulador:+sigma+ :below (formulador:box \"(i,j)∈E)\"))
+;; "
+;; )
+
+;; (formulador-command "(rowb
+;;  (frak \"1\" \"2\") (formulador:box\"(i,j)∈E)\" )
+;; )")
+
+
+
+;; (formulador-command "(rowb
+;;  (frak \"1\" \"2\") 
+
+;; (rowb 
+;; (formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
+
+;; (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
+
+
+;; )
+
+;; )")
+
+ 
+;; +---------------+
+;; |     ===       |
+;; | 1   \         |
+;; |---   >   (W   |
+;; | 2   /      ij |
+;; |     ===       |
+;; |   (i,j)∈E     |
+;; +---------------+
 
 
 (provide 'formulador)
