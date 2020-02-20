@@ -32,7 +32,27 @@
   (concat
    "(load \""
    (concat (current-buffer-path)
-	   "formulador.asd\")\n (require `formulador)"
+	   "formulador.asd\")\n (require `formulador)
+
+
+(defun pow (a b)
+  (formulador:script-box a :superscript b))
+
+
+
+(defun sub (a b)
+  (formulador:script-box a :subscript b))
+
+(defun frak (a b)
+  (formulador:frac-box (formulador:box a)
+		       (formulador:box b)))
+
+(defun rowb (a b)
+  (formulador:row-box (list (formulador:box a) (formulador:box b))))
+
+(print
+(formulador:draw 
+"
 	   )
    ))
 
@@ -49,7 +69,8 @@
 	  (car(s-split "with" (car(cdr (s-split ":CANVAS"
 						(formulador--ros-commands
 						 (concat
-						  ,(formulador--import) ,@commands)
+						  ,(formulador--import)
+						  (concat ,@commands " ))"))
 						 )
 						)))))
 	 ))
@@ -63,14 +84,9 @@
 ;                               Usage Example                               ;
 ; ------------------------------------------------------------------------- ;
 
-;; (formulador-command
+;; (formulador-command "(frak \"2\" \"efr\")")
 
-;;  "
-;; (defun pow (a b)
-;;   (formulador:script-box a :superscript b))
 
-;; (print (formulador:draw (pow (formulador:box \" | \") (formulador:box \"r\"))))"
-;;  )
 
 (provide 'formulador)
 
