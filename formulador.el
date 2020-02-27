@@ -56,6 +56,16 @@
 	   )
    ))
 
+(defun formulador/scratch ()
+  (interactive)
+
+  (let ((buf (get-buffer-create "*formulador-scratch*" ))
+	(data (formulador--import)))
+    (with-current-buffer buf
+      (pop-to-buffer buf)
+      (common-lisp-mode)
+      (insert data)
+      )))
 
 (defmacro formulador--ros-commands (&rest commands)
   `(shell-command-to-string
@@ -99,20 +109,58 @@
 
 
 
-;; (formulador-command "(rowb
-;;  (frak \"1\" \"2\") 
+(formulador-command "(rowb
+ (frak \"1\" \"2\") 
 
-;; (rowb 
-;; (formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
+(rowb 
+(formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
 
-;; (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
+(rowb (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
+(rowb \"-< \"  (sub \"Y\" \"i,\" ))))
+
+))
 
 
-;; )
+")
 
-;; )")
 
- 
+(formulador-command
+"
+ (rowb
+  (rowb \"φ(Y,λ) = \"
+	(frak \"1\" \"2\")  )
+
+
+  (rowb
+  (rowb
+   (rowb 
+   (formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
+
+
+   (rowb (rowb 
+   (rowb
+
+    (rowb (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
+	  (rowb \"-< \"  (sub \"Y\" \"i,\" )))
+    (rowb
+     (sub \"Y\" \"j\" )
+     (pow \">(\" \"2\" )))
+   (rowb \"+\" (formulador:frac-box (formulador:box \"λ\") (formulador:box \"2\")  ) ))
+
+     (formulador:limits-box formulador:+sigma+  :below (formulador:box \"i\")  ))
+
+
+   )
+   (rowb \"||\" (sub \"Y\" \"i\")))
+  (rowb \"|\" (rowb (pow \"|\" \"2\") \",\")))
+
+  )
+
+"
+ )
+
+
+
 ;; +---------------+
 ;; |     ===       |
 ;; | 1   \         |
