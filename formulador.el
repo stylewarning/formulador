@@ -26,7 +26,11 @@
 ;;; Commentary:
 
 (require 's)
-(require 'pos-tip)
+
+
+(defun current-buffer-path()
+  (file-name-directory (buffer-file-name)))
+
 
 (defun formulador--import()
   (concat
@@ -58,7 +62,6 @@
 
 (defun formulador/scratch ()
   (interactive)
-
   (let ((buf (get-buffer-create "*formulador-scratch*" ))
 	(data (formulador--import)))
     (with-current-buffer buf
@@ -76,15 +79,16 @@
 
 (defmacro formulador-command (&rest commands)
   `(let ((command
-	  (car(s-split "with" (car(cdr (s-split ":CANVAS"
-						(formulador--ros-commands
-						 (concat
-						  ,(formulador--import)
-						  (concat ,@commands " ))"))
-						 )
-						)))))
-	 ))
-     (pos-tip-show command)
+	  (car(s-split "with"
+		       (car
+			(cdr
+			 (s-split ":CANVAS"
+				  (formulador--ros-commands
+				   (concat
+				    ,(formulador--import)
+				    (concat ,@commands " ))"))
+				   ))))))))
+     (message command)
      (kill-new command)
   ))
 
@@ -108,56 +112,40 @@
 ;; )")
 
 
-
-(formulador-command "(rowb
- (frak \"1\" \"2\") 
-
-(rowb 
-(formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
-
-(rowb (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
-(rowb \"-< \"  (sub \"Y\" \"i,\" ))))
-
-))
+;; (formulador-command
+;; "
+;;  (rowb
+;;   (rowb \"φ(Y,λ) = \"
+;; 	(frak \"1\" \"2\")  )
 
 
-")
+;;   (rowb
+;;   (rowb
+;;    (rowb 
+;;    (formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
 
 
-(formulador-command
-"
- (rowb
-  (rowb \"φ(Y,λ) = \"
-	(frak \"1\" \"2\")  )
+;;    (rowb (rowb 
+;;    (rowb
+
+;;     (rowb (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
+;; 	  (rowb \"-< \"  (sub \"Y\" \"i,\" )))
+;;     (rowb
+;;      (sub \"Y\" \"j\" )
+;;      (pow \">(\" \"2\" )))
+;;    (rowb \"+\" (formulador:frac-box (formulador:box \"λ\") (formulador:box \"2\")  ) ))
+
+;;      (formulador:limits-box formulador:+sigma+  :below (formulador:box \"i\")  ))
 
 
-  (rowb
-  (rowb
-   (rowb 
-   (formulador:limits-box formulador:+sigma+  :below (formulador:box \"(i,j)∈E\")  )
+;;    )
+;;    (rowb \"||\" (sub \"Y\" \"i\")))
+;;   (rowb \"|\" (rowb (pow \"|\" \"2\") \",\")))
 
+;;   )
 
-   (rowb (rowb 
-   (rowb
-
-    (rowb (rowb \"(\" (sub (formulador:box \"W\") (formulador:box \"ij \")) )
-	  (rowb \"-< \"  (sub \"Y\" \"i,\" )))
-    (rowb
-     (sub \"Y\" \"j\" )
-     (pow \">(\" \"2\" )))
-   (rowb \"+\" (formulador:frac-box (formulador:box \"λ\") (formulador:box \"2\")  ) ))
-
-     (formulador:limits-box formulador:+sigma+  :below (formulador:box \"i\")  ))
-
-
-   )
-   (rowb \"||\" (sub \"Y\" \"i\")))
-  (rowb \"|\" (rowb (pow \"|\" \"2\") \",\")))
-
-  )
-
-"
- )
+;; "
+;;  )
 
 
 
