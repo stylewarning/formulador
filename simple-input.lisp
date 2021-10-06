@@ -70,8 +70,13 @@
 		(parse-evaluator
 		 (parse-groups-tester (write-to-string formula)))) ")"))
 
+;(construct-test '(/ r w))
+;"(draw (frac-box (box \"R\" )(box \"W\" )))"
+
 ;;;;
 ;;;Find all commands that use prefix notation
+;"/" 
 
 ;;;what commands use infix notation?
-;(+ r w) => (box "r") (box "+") (box "-") 
+;(+ r w) => (box "r") (box "+") (box "-")
+; "+" "-" "/"
