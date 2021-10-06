@@ -58,20 +58,16 @@
 	(t (concatenate 'string (first parsed-list)
 			(list-concatenator (rest parsed-list))))))
 
-
-
-;;;Prefix to infix
-(defvar infixate (operator list-of-))
-;;;
-
-(defun construct-test (formula)
+(defun construct-test (formula) ;(construct-test '(/ r w)) ;=> "(draw (frac-box (box \"R\" )(box \"W\" )))"
   (concatenate 'string "(draw "
 	       (list-concatenator
 		(parse-evaluator
 		 (parse-groups-tester (write-to-string formula)))) ")"))
 
-;(construct-test '(/ r w))
-;"(draw (frac-box (box \"R\" )(box \"W\" )))"
+
+;;;Prefix to infix
+(defvar infixate (operator list-of-))
+;;;
 
 ;;;;
 ;;;Find all commands that use prefix notation
