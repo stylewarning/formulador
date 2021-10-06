@@ -2,7 +2,7 @@
 
 (in-package #:formulador)
 
-(defconstant operator-conversion-table '(("(/" '(frac-box ))))
+;(defconstant operator-conversion-table '(("(/" '(frac-box ))))
 
 
 (defun simple-parser (string-formula)
@@ -63,8 +63,18 @@
 	       (list-concatenator
 		(parse-evaluator
 		 (parse-groups-tester (write-to-string formula)))) ")"))
+;;;;------------------------------------------------------------------------
+;;;actually it would be better as:
+(defun construct-test (formula)
+  (read-from-string (list-concatenator
+		     (parse-evaluator (parse-groups-tester
+				       (write-to-string formula))))))
+
+; and call like: (draw (construct-test '(/ r w)))
+;;;;-------------------------------------------------------------------------
 
 
+;;;;--------------------------------------------------------------------------
 ;;;Prefix to infix
 (defvar infixate (operator list-of-))
 ;;;
