@@ -21,7 +21,7 @@
 		(nthcdr (deep-length (make-parens-group (rest lexed-list)))
 			lexed-list))))
 	((detect-exp lexed-list)
-	 (cons (make-exponent lexed-list)
+	 (cons (make-exponent lexed-list) ;append (list 'formulador::padding (length)
 	       (make-parens-group (rest (rest (rest lexed-list))))))
 	((detect-frac lexed-list)
 	 (cons (frac-group lexed-list)

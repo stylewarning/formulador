@@ -8,6 +8,7 @@
 ;;;;Exponents
 ;;;;------------------------------------------------------------------------
 
+
 (defun make-exponent (lexed-list)
   (list 'formulador::script-box
 	(if (equal (car (first lexed-list)) ':block)
