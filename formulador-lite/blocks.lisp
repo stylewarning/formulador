@@ -1,12 +1,10 @@
-;;;;formulador-lite/blocks.lisp
+;;;; formulador-lite/blocks.lisp
 ;;;;
 ;;;; Copyright (c) 2021 Izaak Walton
 
-(in-package :formulador-lite)
+(in-package #:formulador-lite)
 
-;;;;------------------------------------------------------------------------
-;;;;Generating a list of blocks and operators
-;;;;------------------------------------------------------------------------
+;;; Generating a list of blocks and operators
 
 (defun make-block (lexed-list)
   "Builds a block as detected."
@@ -32,9 +30,7 @@
 	       (block-list (nthcdr (+ 1 (brack-length (rest lexed-list) 0)) lexed-list))))
 	(t (cons (first lexed-list) (block-list (rest lexed-list))))))
 
-;;;;------------------------------------------------------------------------
-;;;;Block Evaluation
-;;;;------------------------------------------------------------------------
+;;;Block Evaluation
 
 (defun block-eval (block-unit)
   "Evaluates a block."
@@ -59,9 +55,7 @@
 		(nthcdr (+ 1 (deep-length (block-eval (rest block-unit)))) block-unit))))
         (t (cons (first block-unit) (block-eval (rest block-unit))))))
 
-;;;;------------------------------------------------------------------------
-;;;;Cycle through the blockified list and evaluate blocks and operators
-;;;;------------------------------------------------------------------------
+;;; Cycle through the blockified list and evaluate blocks and operators
 
 (defun block-cycle (blocked-list)
   "Cycles through a blocked list and evaluates the boxes, in addition to operators and variables."    
@@ -86,4 +80,4 @@
 	(t (cons (first blocked-list)
 		 (block-cycle (rest blocked-list))))))
 
-;;;;------------------------------------------------------------------------	    
+;;;; ------------------------------------------------------------------------	    

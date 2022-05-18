@@ -1,11 +1,6 @@
-;;;;formulador-lite.asd
+;;;; formulador-lite.asd
 ;;;;
-;;;;Copyright (c) 2021 Izaak Walton
-
-(defpackage #:formulador-lite-asd
-  (:use #:cl))
-
-(in-package #:formulador-lite-asd)
+;;;; Copyright (c) 2021 Izaak Walton
 
 (asdf:defsystem #:formulador-lite
   :author "Izaak Walton <izaakw@protonmail.com>"
@@ -15,8 +10,8 @@
   :depends-on (#:formulador #:alexa)
   :serial t
   :components ((:module "formulador-lite"
-		:serial t
-		:components ((:file "package")
+                :serial t
+                :components ((:file "package")
 			     (:file "lexical-analysis")
 			     (:file "unit-detection")
 			     (:file "blocks")

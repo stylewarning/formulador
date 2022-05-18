@@ -1,63 +1,54 @@
-;;;;formulador-lite/unit-detection.lisp
+;;;; formulador-lite/unit-detection.lisp
 ;;;;
-;;;;Copyright (c) 2021 Izaak Walton
+;;;; Copyright (c) 2021 Izaak Walton
 
 (in-package :formulador-lite)
-;;;;------------------------------------------------------------------------
-;;;;Formula unit detection:
-;;;;------------------------------------------------------------------------
 
-;;;;------------------------------------------------------------------------
-;;;;Bracket and Block Detection
-;;;;------------------------------------------------------------------------
+;;;Formula unit detection:
+
+;;;Bracket and Block Detection
+
 (defun detect-brack (lexed-line)
   "Detects the beginning of a bracketed block."
-  (equal (car (first lexed-line)) ':left-brack))
+  (eq (car (first lexed-line)) ':left-brack))
 
 (defun brack-length (lexed-line counter)
   "Determines the number of elements before the end of a bracketed block."
-  (cond ((detect-end-brack lexed-line) counter)
+  (cond ((detect-end-brack lexed-line)
+         counter)
 	(t (brack-length (rest lexed-line) (+ counter 1)))))
 
 (defun detect-end-brack (lexed-line)
   "Detects the end of a bracketed block."
-  (equal (car (first lexed-line)) ':right-brack))
+  (eq (car (first lexed-line)) ':right-brack))
 
 (defun detect-block (blocked-line)
   "Detects whether there is a unit."
-  (equal (car (first blocked-line)) ':block))
+  (eq (car (first blocked-line)) ':block))
 
-;;;;------------------------------------------------------------------------
-;;;;Parenthesis Detection
-;;;;------------------------------------------------------------------------
+;;;Parenthesis Detection
+
 (defun detect-paren (lexed-line)
   "Detects whether there is a parenthesis group."
-  (equal (car (first lexed-line)) ':left-paren))
+  (eq (car (first lexed-line)) ':left-paren))
 
 (defun detect-end-paren (lexed-line)
   "Detects the closing parenthesis for a parenthesis group."
-  (equal (car (first lexed-line)) ':right-paren))
+  (eq (car (first lexed-line)) ':right-paren))
 
-;;;;------------------------------------------------------------------------
-;;;;Exponent Detection
-;;;;------------------------------------------------------------------------
+;;;Exponent Detection
 
 (defun detect-exp (lexed-line)
   "Detects whether there is an exponent."
-  (equal (car (second lexed-line)) ':exponent))
+  (eq (car (second lexed-line)) ':exponent))
 
-
-;;;;------------------------------------------------------------------------
-;;;;Fraction Detection
-;;;;------------------------------------------------------------------------
+;;;Fraction Detection
 
 (defun detect-frac (lexed-line)
   "Detects whether there is a fraction."
-  (equal (cdr (second lexed-line)) ':/))
+  (eq (cdr (second lexed-line)) ':/))
 
-;;;;------------------------------------------------------------------------
-;;;;Add/sub/mult/equal-chain Detection
-;;;;------------------------------------------------------------------------
+;;;Add/sub/mult/equal-chain Detection
 
 (defun detect-asm-chain (lexed-line)
   "Detects whether the first object is a member of an add/subtract/multiply chain."

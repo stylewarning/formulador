@@ -4,9 +4,7 @@
 
 (in-package :formulador-lite)
 
-;;;;------------------------------------------------------------------------
-;;;;Defining tokens
-;;;;------------------------------------------------------------------------
+;;;Defining tokens
 
 (deftype token ()
   '(cons keyword t))
@@ -14,9 +12,7 @@
 (defun tok (type &optional val)
   (cons type val))
 
-;;;;------------------------------------------------------------------------
-;;;;The Analysis
-;;;;------------------------------------------------------------------------
+;;;The Analysis
 
 (alexa:define-string-lexer formulexer
   "A lexical analyzer for formulador input."

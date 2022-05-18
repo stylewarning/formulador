@@ -1,8 +1,19 @@
-;;;;tests.lisp
+;;;; tests.lisp
+;;;;
+;;;; Copyright (c) 2022 Izaak Walton
 
-(in-package :formulador-lite)
+(ql:quickload :fiasco)
 
+(fiasco:define-test-package #:formulador-tests
+    (:use #:formulador-lite))
 
+(in-package #:fiasco-examples)
+
+(defun output-check (simple-input formulador-function)
+  (string-equal (simple-draw simple-input) 
+
+(deftest simple-operations ()
+  (is (string-equal (simple-draw "1+2") (formulador:draw (formulador:box "1") (formulador:box "+") (formulador:box "2")))))
 
 (defvar test-cases1
   '("1+2"

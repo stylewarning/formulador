@@ -1,13 +1,10 @@
-;;;;formulador-lite/examples.lisp
+;;;; formulador-lite/examples.lisp
 ;;;;
-;;;;Copyright (c) 2021 Izaak Walton
-(in-package :formulador-lite)
+;;;; Copyright (c) 2021 Izaak Walton
 
-;;;;working through the examples from formulador's readMe:
+(in-package #:formulador-lite)
 
-;;;;------------------------------------------------------------------------
-;;;;Using Formulador-lite  Interpreter:
-;;;;------------------------------------------------------------------------
+;;; with the formulador-lite interpreter:
 
 ;FORMULADOR-LITE> (start-drawing)
 ;x/y
@@ -20,13 +17,16 @@
 					;with 3 defined regions>
 (defun pythagorean-theorem ()
   (simple-draw "[a^2]+[b^2]=[c^2]"))
+
 ;#<CANVAS 
 ;+------------+
 ;| 2    2    2|
 ;|A  + B  = C |
 ;+------------+
-;with 15 defined regions>
-;1/[[1/h]+[1/a]+[1/r]+[1/m]+[1/o]+[1/n]+[1/i]+[1/c]]
+					;with 15 defined regions>
+(defun harmonic-test ()
+  (simple-draw "1/[[1/h]+[1/a]+[1/r]+[1/m]+[1/o]+[1/n]+[1/i]+[1/c]]"))
+
 ;#<CANVAS 
 ;+-----------------------------------------------+
 ;|                       1                       |
@@ -41,9 +41,7 @@
 ;NIL
 ;FORMULADOR-LITE> 
 
-
-;;;;------------------------------------------------------------------------
-;;;;Without the interpreter:
+;;; Without the interpreter:
 
 ;FORMULADOR-LITE> (simple-draw "x/y") ;or (simple-draw "[x/y]")
 ;#<FORMULADOR:CANVAS 
@@ -53,21 +51,9 @@
 ;| |y| |
 ;+-----+
 ;with 3 defined regions>
-;;;;------------------------------------------------------------------------
+
 
 ;(simple-draw "[[x/y]+[w/[u+v]]]/[[p+q]/[r+[1/s]]]")
 
 ;;;;------------------------------------------------------------------------
 
-FORMULADOR-LITE> (simple-draw "1/[[1/h] + [1/a] + [1/r] + [1/m] + [1/o] + [1/n] + [1/i] + [1/c]]")
-#<FORMULADOR:CANVAS 
-+---------------------------------------------------------------+
-|                               1                               |
-|---------------------------------------------------------------|
-|   1       1       1       1       1       1       1       1   |
-| ----- + ----- + ----- + ----- + ----- + ----- + ----- + ----- |
-|  |h|     |a|     |r|     |m|     |o|     |n|     |i|     |c|  |
-+---------------------------------------------------------------+
-with 35 defined regions>
-
-;;;;------------------------------------------------------------------------

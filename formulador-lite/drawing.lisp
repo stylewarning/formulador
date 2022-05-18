@@ -1,20 +1,19 @@
-;;;;drawing.lisp
+;;;; drawing.lisp
+;;;;
+;;;; Copyright (c) 2022 Izaak Walton
 
-(in-package :formulador-lite)
+(in-package #:formulador-lite)
 
 
-;;;;;------------------------------------------------------------------------
-;;;;;The simple drawing command: (simple-draw "1+2")
-;;;;;------------------------------------------------------------------------
+
+;;; The simple drawing command: (simple-draw "1+2")
+
 (defun simple-draw (formula-string)
   "Given a formula-string, returns pretty-printed formulador formula."
   (formulador::draw
    (eval (first (block-cycle (block-list (lex-line formula-string)))))))
 
-
-;;;;------------------------------------------------------------------------
-;;;;Interpreter
-;;;;------------------------------------------------------------------------
+;;;Interpreter
 
 (defvar drawing-in-progress nil)
 

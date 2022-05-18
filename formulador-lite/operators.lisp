@@ -1,13 +1,10 @@
-;;;;formulador-lite/operators.lisp
+;;;; formulador-lite/operators.lisp
 ;;;;
-;;;;Copyright (c) 2021 Izaak Walton
+;;;; Copyright (c) 2021 Izaak Walton
 
 (in-package :formulador-lite)
 
-;;;;------------------------------------------------------------------------
-;;;;Exponents
-;;;;------------------------------------------------------------------------
-
+;;; Exponents
 
 (defun make-exponent (lexed-list)
   (list 'formulador::script-box
@@ -29,9 +26,7 @@
 	      (t (list 'formulador::box
 		  (cdr (third lexed-list)))))))
 
-;;;;------------------------------------------------------------------------
-;;;;Fractions
-;;;;------------------------------------------------------------------------
+;;; Fractions
 
 (defun frac-group (lexed-list)
   "Generates a (frac-box from the first three elements of a lexed list."
@@ -49,9 +44,7 @@
 	    (list 'formulador::box
 		  (cdr (third lexed-list))))))
 
-;;;;------------------------------------------------------------------------
-;;;;Addition, subtraction, and  multiplication chains
-;;;;------------------------------------------------------------------------
+;;; Addition, subtraction, and  multiplication chains
 
 (defun asm-chain (lexed-list)
   (cond ((or (detect-asm-chain-end lexed-list)
