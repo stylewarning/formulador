@@ -15,8 +15,8 @@
 	(t (cons (first lexed-list)
 		 (make-block (rest lexed-list))))))
 
-(defun deep-length (list)
-  "Recursevile finds the total length of atoms in a list"
+(defun tree-size (list)
+  "Recursively finds the total length of atoms in a list"
   (cond ((null list) 0)
 	((atom list) 1)
 	(t (+ (deep-length (car list))
@@ -58,7 +58,7 @@
 ;;; Cycle through the blockified list and evaluate blocks and operators
 
 (defun block-cycle (blocked-list)
-  "Cycles through a blocked list and evaluates the boxes, in addition to operators and variables."    
+  "Cycles through a blocked list and evaluates the boxes, in addition to operators and variables."   
   (cond ((null blocked-list) nil)
 	((detect-paren blocked-list)
 	 (cons (cons 'formulador::parens-box (make-parens-group (rest blocked-list)))

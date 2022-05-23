@@ -18,4 +18,5 @@
 			     (:file "parentheses")
 			     (:file "operators")
 			     (:file "drawing")
-			     (:file "tests")))))
+                                        ;(:file "tests")
+                             ))))
