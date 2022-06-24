@@ -19,8 +19,8 @@
   "Recursively finds the total length of atoms in a list"
   (cond ((null list) 0)
 	((atom list) 1)
-	(t (+ (deep-length (car list))
-	      (deep-length (cdr list))))))
+	(t (+ (tree-size (car list))
+	      (tree-size (cdr list))))))
 
 (defun block-list (lexed-list)
   (cond ((null lexed-list) nil)
@@ -38,7 +38,7 @@
 	((detect-paren block-unit)
 	 (cons (cons 'formulador::parens-box
 		     (make-parens-group (rest block-unit)))
-	       (block-eval (nthcdr (+ 1 (deep-length (make-parens-group (rest block-unit))))
+	       (block-eval (nthcdr (+ 1 (tree-size (make-parens-group (rest block-unit))))
 			block-unit))))
 	((detect-exp block-unit)
 	 (cons (make-exponent block-unit)
@@ -48,11 +48,11 @@
 	       (block-eval (rest (rest (rest block-unit))))))
 	((detect-asm-chain block-unit)
 	 (cons (cons 'formulador::glue (asm-chain block-unit))
-	       (block-eval (nthcdr (+ 1 (deep-length (asm-chain block-unit))) block-unit))))
+	       (block-eval (nthcdr (+ 1 (tree-size (asm-chain block-unit))) block-unit))))
 	((detect-block block-unit)
 	 (cons (car (block-eval (cadr (first block-unit))))
 	       (block-eval
-		(nthcdr (+ 1 (deep-length (block-eval (rest block-unit)))) block-unit))))
+		(nthcdr (+ 1 (tree-size (block-eval (rest block-unit)))) block-unit))))
         (t (cons (first block-unit) (block-eval (rest block-unit))))))
 
 ;;; Cycle through the blockified list and evaluate blocks and operators
@@ -62,7 +62,7 @@
   (cond ((null blocked-list) nil)
 	((detect-paren blocked-list)
 	 (cons (cons 'formulador::parens-box (make-parens-group (rest blocked-list)))
-	       (block-cycle (nthcdr (deep-length (make-parens-group (rest blocked-list))) blocked-list))))
+	       (block-cycle (nthcdr (tree-size (make-parens-group (rest blocked-list))) blocked-list))))
 	((detect-exp blocked-list)
 	 (cons (make-exponent blocked-list)
 	       (block-cycle (rest (rest (rest blocked-list))))))
@@ -71,12 +71,12 @@
 	       (block-cycle (rest (rest (rest blocked-list))))))
 	((detect-asm-chain blocked-list)
 	 (cons (cons 'formulador::glue (asm-chain blocked-list))
-	       (block-cycle (nthcdr (+ 1 (deep-length (asm-chain (rest blocked-list))))
+	       (block-cycle (nthcdr (+ 1 (tree-size (asm-chain (rest blocked-list))))
 				    blocked-list))))
 	((detect-block blocked-list)
 	 (cons (car (block-eval (cadr (first blocked-list))))
 	       (block-cycle
-		(nthcdr (+ 1 (deep-length (block-eval (rest blocked-list)))) blocked-list))))
+		(nthcdr (+ 1 (tree-size (block-eval (rest blocked-list)))) blocked-list))))
 	(t (cons (first blocked-list)
 		 (block-cycle (rest blocked-list))))))
 

@@ -16,19 +16,20 @@
 
 (alexa:define-string-lexer formulexer
   "A lexical analyzer for formulador-lite"
-  ((:oper "[=+*-]")
-   (:num "\\d+")
-   (:symb "[A-Za-z][A-Za-z0-9_]*"))
-   ("{{OPER}}" (return (tok #'formulador::box (princ-to-string $@))))
-   ("{{NUM}}"  (return (tok #'formulador::box (princ-to-string $@))))
-   ("{{SYMB}}" (return (tok #'formulador::box  (princ-to-string $@))))
-   ("\\/"      (return (tok :frac (intern $@ 'keyword))))
-   ("\\^"      (return (tok :exponent)))
-   ("\\("      (return (tok :left-paren)))
-   ("\\)"      (return (tok :right-paren)))
-   ("\\["      (return (tok :left-brack)))
-   ("\\]"      (return (tok :right-brack)))
-   ("\\s+"     nil))
+  ((:num "\\d+"))
+  ("{{NUM}}"
+   (return (tok :number (funcall #'formulador::box (princ-to-string $@)))))
+  ("[A-Za-z][A-Za-z0-9_]*"
+   (return (tok :symbol (funcall #'formulador::box (princ-to-string $@)))))
+  ("[+*-]"
+   (return (tok :infix-oper (funcall #'formulador::box (princ-to-string $@)))))
+  ("\\/"      (return (tok :frac (intern $@ 'keyword))))
+  ("\\^"      (return (tok :exponent)))
+  ("\\("      (return (tok :left-paren)))
+  ("\\)"      (return (tok :right-paren)))
+  ("\\["      (return (tok :left-brack)))
+  ("\\]"      (return (tok :right-brack)))
+  ("\\s+"     nil))
   
 ;(alexa:define-string-lexer formulexer
  ; "A lexical analyzer for formulador input."

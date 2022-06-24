@@ -12,8 +12,8 @@
 	((atom list)
          1)
 	(t
-         (+ (deep-length (car list))
-	      (deep-length (cdr list))))))
+         (+ (tree-size (car list))
+	      (tree-size (cdr list))))))
 
 (defun make-parens-group (lexed-list)
   "Given a list following a left-paren, returns all items contained within the parenthetical."
@@ -22,7 +22,7 @@
 	((detect-paren lexed-list)
 	 (cons (cons 'formulador::parens-box (first (make-parens-group (rest lexed-list))))
 	       (make-parens-group
-		(nthcdr (deep-length (make-parens-group (rest lexed-list)))
+		(nthcdr (tree-size (make-parens-group (rest lexed-list)))
 			lexed-list))))
 	((detect-exp lexed-list)
 	 (cons (make-exponent lexed-list) ;append (list 'formulador::padding (length)
@@ -38,7 +38,7 @@
 	((detect-block lexed-list)
 	 (cons (car (block-eval (cadr (first lexed-list))))
 	       (make-parens-group
-		(nthcdr (deep-length (block-eval (rest lexed-list))) lexed-list))))
+		(nthcdr (tree-size (block-eval (rest lexed-list))) lexed-list))))
 	(t
          (cons (first lexed-list)
 		 (make-parens-group (rest lexed-list))))))

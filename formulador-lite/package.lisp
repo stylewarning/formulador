@@ -1,6 +1,6 @@
 ;;;; formulador-lite/package.lisp
 ;;;;
-;;;; Copyright (c) 2021 Izaak Walton
+;;;; Copyright (c) 2021-2022 Izaak Walton
 
 (defpackage #:formulador-lite
   (:documentation "A simple-input interface for formula illustration")
