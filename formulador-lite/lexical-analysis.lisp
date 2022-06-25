@@ -4,7 +4,7 @@
 
 (in-package :formulador-lite)
 
-;;;Defining tokens
+;;; Defining tokens
 
 (deftype token ()
   '(cons keyword t))
@@ -12,18 +12,21 @@
 (defun tok (type &optional val)
   (cons type val))
 
-;;;The Analysis
+;;; The Analysis
 
 (alexa:define-string-lexer formulexer
   "A lexical analyzer for formulador-lite"
-  ((:num "\\d+"))
+  ((:num "\\d+")
+   (:infix-oper "[+*-=]")
+   (:symbol "[A-Za-z][A-Za-z0-9_]*"))
+  ("\\/"      (return (tok :frac)))
   ("{{NUM}}"
    (return (tok :number (funcall #'formulador::box (princ-to-string $@)))))
-  ("[A-Za-z][A-Za-z0-9_]*"
+  ("{{SYMBOL}}"
    (return (tok :symbol (funcall #'formulador::box (princ-to-string $@)))))
-  ("[+*-]"
+  ("{{INFIX-OPER}}"
    (return (tok :infix-oper (funcall #'formulador::box (princ-to-string $@)))))
-  ("\\/"      (return (tok :frac (intern $@ 'keyword))))
+  ;("\\/"      (return (tok :frac)))
   ("\\^"      (return (tok :exponent)))
   ("\\("      (return (tok :left-paren)))
   ("\\)"      (return (tok :right-paren)))

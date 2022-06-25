@@ -1,6 +1,6 @@
 ;;;; drawing.lisp
 ;;;;
-;;;; Copyright (c) 2022 Izaak Walton
+;;;; Copyright (c) 2021-2022 Izaak Walton
 
 (in-package #:formulador-lite)
 
@@ -10,8 +10,7 @@
 
 (defun simple-draw (formula-string)
   "Given a formula-string, returns pretty-printed formulador formula."
-  (formulador::draw
-   (eval (first (block-cycle (block-list (lex-line formula-string)))))))
+  (formulador::draw (first (block-cycle (block-list (lex-line formula-string))))))
 
 ;;;Interpreter
 

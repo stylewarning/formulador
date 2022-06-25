@@ -1,19 +1,24 @@
 ;;;; formulador-lite/blocks.lisp
 ;;;;
-;;;; Copyright (c) 2021 Izaak Walton
+;;;; Copyright (c) 2021-2022 Izaak Walton
 
 (in-package #:formulador-lite)
 
 ;;; Generating a list of blocks and operators
 
-(defun make-block (lexed-list)
+(defun make-block-backend (lexed-list)
   "Builds a block as detected."
-  (cond ((detect-end-brack lexed-list) nil)
+  (cond ((null lexed-list) nil)
+	((detect-end-brack lexed-list) nil)
 	((detect-brack lexed-list)
-	 (cons (list ':block (make-block (rest lexed-list)))
-	       (make-block (nthcdr (+ 1 (brack-length lexed-list 0)) lexed-list))))
+	 (cons (make-block (rest lexed-list))
+	       (make-block-backend (nthcdr (+ 1 (brack-length (rest lexed-list))) (rest lexed-list)))))
 	(t (cons (first lexed-list)
-		 (make-block (rest lexed-list))))))
+		 (make-block-backend (rest lexed-list))))))
+
+(defun make-block (lexed-list)
+  "Builds a block from a lexed list."
+  (cons ':block (make-block-backend lexed-list)))
 
 (defun tree-size (list)
   "Recursively finds the total length of atoms in a list"
@@ -23,11 +28,12 @@
 	      (tree-size (cdr list))))))
 
 (defun block-list (lexed-list)
+  "Cycles through a lexed list and organizes blocks in order."
   (cond ((null lexed-list) nil)
 	((detect-end-brack lexed-list) (block-list (rest lexed-list)))
 	((detect-brack lexed-list)
-	 (cons (list ':block (make-block (rest lexed-list)))
-	       (block-list (nthcdr (+ 1 (brack-length (rest lexed-list) 0)) lexed-list))))
+	 (cons (make-block (rest lexed-list))
+	       (block-list (nthcdr (+ 1 (brack-length (rest lexed-list))) lexed-list))))
 	(t (cons (first lexed-list) (block-list (rest lexed-list))))))
 
 ;;;Block Evaluation
@@ -46,9 +52,9 @@
 	((detect-frac block-unit)
 	 (cons (frac-group block-unit)
 	       (block-eval (rest (rest (rest block-unit))))))
-	((detect-asm-chain block-unit)
-	 (cons (cons 'formulador::glue (asm-chain block-unit))
-	       (block-eval (nthcdr (+ 1 (tree-size (asm-chain block-unit))) block-unit))))
+	((detect-infix-chain block-unit)
+	 (cons (infix-chain block-unit)
+	       (block-eval (nthcdr (+ 1 (detect-infix-chain-length block-unit)) block-unit))))
 	((detect-block block-unit)
 	 (cons (car (block-eval (cadr (first block-unit))))
 	       (block-eval
@@ -69,9 +75,9 @@
 	((detect-frac blocked-list)
 	 (cons (frac-group blocked-list)
 	       (block-cycle (rest (rest (rest blocked-list))))))
-	((detect-asm-chain blocked-list)
-	 (cons (cons 'formulador::glue (asm-chain blocked-list))
-	       (block-cycle (nthcdr (+ 1 (tree-size (asm-chain (rest blocked-list))))
+	((detect-infix-chain blocked-list)
+	 (cons (infix-chain blocked-list)
+	       (block-cycle (nthcdr (+ 1 (detect-infix-chain-length blocked-list))
 				    blocked-list))))
 	((detect-block blocked-list)
 	 (cons (car (block-eval (cadr (first blocked-list))))
