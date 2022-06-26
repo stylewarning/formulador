@@ -9,24 +9,29 @@
 
 (in-package #:fiasco-examples)
 
-(defun output-check (simple-input formulador-function)
-  (string-equal (simple-draw simple-input) 
+;(defun output-check (simple-input formulador-function)
+ ; (string-equal (simple-draw simple-input) formulador-fun
+
+(deftest simple-operations ()
+  (loop :for case :in test-cases1
+        :do (is (string-equal (simple-draw (first case))
+                              (second case)))))
 
 (deftest simple-operations ()
   (is (string-equal (simple-draw "1+2") (formulador:draw (formulador:box "1") (formulador:box "+") (formulador:box "2")))))
 
 (defvar test-cases1
-  '("1+2"
-    "1-2"
-    "1*2"
-    "1=2"
-    "1/2"
-    "1^2"
-    "[1+2]"
-    "[1-2]"
-    "[1*2]"
-    "[1/2]"
-    "[1^2]"))
+  '(("1+2" (formulador:draw (formulador:box "1") (formulador:box "+") (formulador:box "2")))
+    ("1-2" (formulador:draw (formulador:box "1") (formulador:box "1") (formulador:box "2")))
+    ("1*2")
+    ("1=2")
+    ("1/2")
+    ("1^2")
+    ("[1+2]")
+    ("[1-2]")
+    ("[1*2]")
+    ("[1/2]")
+    ("[1^2]")))
 
 (defvar test-cases2
   '("(1+2)"

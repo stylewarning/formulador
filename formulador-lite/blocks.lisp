@@ -27,6 +27,14 @@
 	(t (+ (tree-size (car list))
 	      (tree-size (cdr list))))))
 
+(defun block-length-backend (block-unit counter)
+  (cond ((null block-unit) counter)
+        ((detect-end-brack block-unit) counter)
+        (t (block-length-backend (rest block-unit) (+ counter 1)))))
+
+(defun block-length (block-unit)
+  (block-length-backend block-unit 0))
+
 (defun block-list (lexed-list)
   "Cycles through a lexed list and organizes blocks in order."
   (cond ((null lexed-list) nil)
@@ -41,7 +49,7 @@
 (defun block-eval (block-unit)
   "Evaluates a block."
   (cond ((null block-unit) nil)
-	((detect-paren block-unit)
+	((detect-paren (list block-unit))
 	 (cons (cons 'formulador::parens-box
 		     (make-parens-group (rest block-unit)))
 	       (block-eval (nthcdr (+ 1 (tree-size (make-parens-group (rest block-unit))))
@@ -80,9 +88,9 @@
 	       (block-cycle (nthcdr (+ 1 (detect-infix-chain-length blocked-list))
 				    blocked-list))))
 	((detect-block blocked-list)
-	 (cons (car (block-eval (cadr (first blocked-list))))
+	 (cons (car (block-eval (cdar blocked-list)))
 	       (block-cycle
-		(nthcdr (+ 1 (tree-size (block-eval (rest blocked-list)))) blocked-list))))
+		(nthcdr (+ 1 (block-length blocked-list)) blocked-list))))
 	(t (cons (first blocked-list)
 		 (block-cycle (rest blocked-list))))))
 

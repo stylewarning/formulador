@@ -14,6 +14,9 @@
 
 ;;; The Analysis
 
+(defun string-space (string)
+  (concatenate 'string " " string " "))
+
 (alexa:define-string-lexer formulexer
   "A lexical analyzer for formulador-lite"
   ((:num "\\d+")
@@ -21,11 +24,11 @@
    (:symbol "[A-Za-z][A-Za-z0-9_]*"))
   ("\\/"      (return (tok :frac)))
   ("{{NUM}}"
-   (return (tok :number (funcall #'formulador::box (princ-to-string $@)))))
+   (return (tok :number (funcall #'formulador::box (string-space (princ-to-string $@))))))
   ("{{SYMBOL}}"
-   (return (tok :symbol (funcall #'formulador::box (princ-to-string $@)))))
+   (return (tok :symbol (funcall #'formulador::box (string-space (princ-to-string $@))))))
   ("{{INFIX-OPER}}"
-   (return (tok :infix-oper (funcall #'formulador::box (princ-to-string $@)))))
+   (return (tok :infix-oper (funcall #'formulador::box (string-space (princ-to-string $@))))))
   ;("\\/"      (return (tok :frac)))
   ("\\^"      (return (tok :exponent)))
   ("\\("      (return (tok :left-paren)))
