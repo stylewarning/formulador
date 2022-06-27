@@ -52,6 +52,6 @@
                  (make-parens-backend (rest lexed-list))))))
 
 (defun make-parens (lexed-list)
-  (formulador::parens-box (make-parens-backend lexed-list)))
+  (formulador::parens-box (car (make-parens-backend lexed-list))))
 
 ;;;;------------------------------------------------------------------------

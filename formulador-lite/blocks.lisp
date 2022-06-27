@@ -49,7 +49,7 @@
 (defun block-eval (block-unit)
   "Evaluates a block."
   (cond ((null block-unit) nil)
-	((detect-paren (list block-unit))
+	((detect-paren block-unit)
          (cons (make-parens (rest block-unit))
                (block-eval (nthcdr (+ 1 (paren-length (rest block-unit))) block-unit))))
 	; (cons (cons 'formulador::parens-box
@@ -93,7 +93,7 @@
 	 (cons (car (block-eval (cdar blocked-list)))
 	       (block-cycle
 		(nthcdr (+ 1 (block-length blocked-list)) blocked-list))))
-	(t (cons (first blocked-list)
+	(t (cons (cdr (first blocked-list))
 		 (block-cycle (rest blocked-list))))))
 
 ;;;; ------------------------------------------------------------------------	    
