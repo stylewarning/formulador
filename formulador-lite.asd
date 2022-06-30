@@ -7,7 +7,7 @@
   :license "BSD 3-clause (see LICENSE)"
   :description "Simplified formula interface."
   :long-description "A simple input interface for Formulador."
-  :depends-on (#:formulador #:alexa)
+  :depends-on (#:formulador #:alexa #:fiasco)
   :serial t
   :components ((:module "formulador-lite"
                 :serial t
@@ -18,5 +18,4 @@
 			     (:file "parentheses")
 			     (:file "operators")
 			     (:file "drawing")
-                                        ;(:file "tests")
-                             ))))
+                             (:file "tests")))))

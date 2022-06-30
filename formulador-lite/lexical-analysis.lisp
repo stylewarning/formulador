@@ -17,12 +17,19 @@
 (defun string-space (string)
   (concatenate 'string " " string " "))
 
+(defun as-is (fraction-string)
+  "Converts an %input% into a string."
+  (subseq fraction-string 1 (- (length fraction-string) 1)))
+
 (alexa:define-string-lexer formulexer
   "A lexical analyzer for formulador-lite"
   ((:num "\\d+")
    (:infix-oper "[+*-=]")
-   (:symbol "[A-Za-z][A-Za-z0-9_]*"))
+   (:symbol "[A-Za-z][A-Za-z0-9_]*")
+   (:as-is "\\%[A-Za-z0-9]\\/[A-Za-z0-9]\\%"))
   ("\\/"      (return (tok :frac)))
+  ("{{AS-IS}}"
+   (return (tok :symbol (funcall #'formulador::box (as-is (princ-to-string $@))))))
   ("{{NUM}}"
    (return (tok :number (funcall #'formulador::box (string-space (princ-to-string $@))))))
   ("{{SYMBOL}}"
@@ -35,8 +42,7 @@
   ("\\)"      (return (tok :right-paren)))
   ("\\["      (return (tok :left-brack)))
   ("\\]"      (return (tok :right-brack)))
-  ("\\s+"     nil))
-  
+  ("\\s+"     nil))  
 ;(alexa:define-string-lexer formulexer
  ; "A lexical analyzer for formulador input."
 ;  ((:oper   "[=+*-]")
