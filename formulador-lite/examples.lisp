@@ -14,6 +14,14 @@
 ;|---|
 ;| Y |
 ;+---+
+;%x/y%
+;+---+
+;|1/2|
+;+---+
+
+
+                                        ;or
+;
 					;with 3 defined regions>
 (defun pythagorean-theorem ()
   (simple-draw "[a^2]+[b^2]=[c^2]"))
@@ -41,17 +49,25 @@
 ;NIL
 ;FORMULADOR-LITE> 
 
-;;; Without the interpreter:
+;FORMULADOR-LITE> (simple-draw "[x/y]+[w/[u+v]]")
+;#<CANVAS 
+;+-------------------+
+;|  x          w     |
+;|----- + -----------|
+;|  y       u  +  v  |
+;+-------------------+
+;with 11 defined regions>
 
-;FORMULADOR-LITE> (simple-draw "x/y") ;or (simple-draw "[x/y]")
-;#<FORMULADOR:CANVAS 
-;+-----+
-;| |x| |
-;|-----|
-;| |y| |
-;+-----+
-;with 3 defined regions>
-
+;FORMULADOR-LITE> (simple-draw "[p+q]/[r+[1/s]]")
+;#<CANVAS 
+;+-------------+
+;|   p  +  q   |
+;|-------------|
+;|         1   |
+;|  r  + ----- |
+;|         s   |
+;+-------------+
+;with 11 defined regions>
 
 ;(simple-draw "[[x/y]+[w/[u+v]]]/[[p+q]/[r+[1/s]]]")
 
